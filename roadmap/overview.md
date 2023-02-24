@@ -5,7 +5,7 @@ The roadmap defines a high level product road map
 * Reactory Server 0.9.6 - Only maintenance on existing production systems are done and no new features to be added to the version.
 * Reactory Client 0.9.6 - Only maintenance and critical bugs are done and no new features added.
 
-## Version 1 (Sep 2022 - Aug 2023)
+## Version 1 (2023)
 ### Q1
 * Open Source Community Edition v1.0.0 of Reactory Server
 * Open Source Community Edition v1.0.0 of Reactory PWA Client
@@ -22,7 +22,7 @@ The roadmap defines a high level product road map
 * Reactory MQTT - Closed Alpha
 * Reactory PDF
 
-## Version 2 (Sep 2023 - Aug 2024)
+## Version 2 (2024)
 
 ### Q1
 * Reactory PaaS Closed Alpha
@@ -43,7 +43,7 @@ The roadmap defines a high level product road map
 * Reactory MQTT - Open BETA
 * Reactory Demographics
 
-## Version 3 (Sep 2024 - Aug 2025)
+## Version 3 (2025)
 ### Q1 
 * Reactory PaaS public release
 * Reactory DevOps Enterprise  
