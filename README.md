@@ -1,4 +1,4 @@
-	![Reactory Logo](/branding/reactory-logo-02.pngimage.jpg "Reactory Logo")
+	![Reactory Logo](branding/reactory-logo-02.png "Reactory Logo")
 # Reactory Documents
 Welcome to Reactory Documents. This is a starting point for your journey with Reactory. This project will only contain documentation and samples.
 
