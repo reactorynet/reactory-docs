@@ -1,21 +1,36 @@
-	![Reactory Logo](branding/reactory-logo-02.png "Reactory Logo")
+![Build Anything Fast](/branding/reactory-logo.png)
 # Reactory Documents
-Welcome to Reactory Documents. This is a starting point for your journey with Reactory. This project will only contain documentation and samples.
+Welcome to Reactory Documents. This is a starting point for your journey with Reactory. This project will only contain documentation, samples and links to resources for further reading.
 
-## What is Reactory
-Reactory is a framework that consists of several components that allows for the rapid prototyping and development of enterprise grade web and native react applications through configuration driven development, but also allows for rich customization through a component kernel and forms engine.
+## What is Reactory?
+Reactory is a RAD (Rapid Application Development) framework that consists of several components that allows for the rapid prototyping and development of enterprise grade web and native react applications. This is achieved through the three C's approach. Convention, Configuration and Customization.
 
-The framework has a server or api component and a SPA web client.  A React Native client is currently under development.
+The framework has a server and a SPA web client.  A React Native client is currently under construction.
 
 Reactory follows the following principle in software design.
-- Convention: The system should follow convention first, this means data structres can be interpreted by the system and the system will provide the best possible interface based on the data structure and meta data.
-- Configuration: When convention fails to provide the best possible interface, configuration will provide extended capabilities for presentation and data acquisition.
-- Customization: When neither convention or configuration can provide the best user interface we do full customization. 
+- **Convention**: The system should follow convention first, this means data structres can be interpreted by the system and the system will provide the best possible interface based on the data structure and meta data.
+- **Configuration**: When convention fails to provide the best possible interface, configuration will provide extended capabilities for presentation and data acquisition.
+- **Customization**: When neither convention or configuration can provide the best user interface we do full customization. 
 
 This approach gives us the best possible velocity for the given task at hand. Some tasks can be done adequitely by the system, where others will require developer or user intervention to improve the solution.
 
 ### Reactory Server
-Reactory Server (open source) is an express node js application that is highly configurable and extensible.  It comes built in with core features around multi tennancy, users, organisations, business units, memberships, teams and several other domain areas that are common to most enterprises. The forms provides schematic approaches to data fetching, binding, pdf generations, excel exports and more.
+Reactory Server (open source) is an express node js application that is highly configurable and extensible.  
+It comes built in with core features around: 
+* multi tennancy
+* dynamic user interfaces 
+* users 
+* organisations
+* business units 
+* memberships with RBAC (Role Based Access Control) 
+* teams
+* theming
+* plugin and extension
+* JIT compilation and distribution of modules
+* file management
+* devops
+
+and several other domain areas that are common to most enterprises. The forms provides schematic approaches to data fetching, binding, pdf generations, excel exports and more.
 
 The primary API is configured for GraphQL based API interaction. There are some REST apis and you can extend the application with additional REST apis should you have a need for REST based interaction with some of your components.
 
