@@ -1,9 +1,26 @@
 
 # Object Mapping
 
-An important concept to understand in Reactory is object mapping.
+Object mapping is an essential concept to understand in Reactory. The platform utilizes the [object-mapper](https://www.npmjs.com/package/object-mapper) in both the client and server, with "propertyMap" properties available for many components. These maps dynamically map properties to components, depending on the execution context.
 
-## Current.
+```javascript
+var original = {
+  "sourceKey": null,
+  "otherSourceKey": null
+}
+ 
+var transform = {
+  "sourceKey": "canBeNull?",
+  "otherSourceKey": "cannotBeNull"
+}
+ 
+var results = ObjectMapper(original, {}, transform);
+ 
+// Results would be the following
+{
+  canBeNull: null
+}
 
-## Roadmap
-Intelligent mapping based on props inspection. If properties passed to an object looks like a property map based on inspection, the reactory engine will automatically suggest mappings between objects / components during designtime. The goal is to create an object mapping engine that can inspect all schemas within the system and and be able to determine potential maps when building forms / components.
+```
+
+See the project [object-mapper](https://www.npmjs.com/package/object-mapper) for more details

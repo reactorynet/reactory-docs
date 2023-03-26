@@ -1,3 +1,4 @@
+![Build Anything Fast](/branding/reactory-logo.png)
 # Product Roadmap
 This document will describe the various products, their current versions and their roadmap. 
 
@@ -37,5 +38,6 @@ This document will describe the various products, their current versions and the
 25. **Reactory Motion** - Modules for motion control and detection. This will cover server side graphs and forms to manage motion settings, flight controls, waypoints and upload to IoT devices / automated drones via the Reactory MQTT toolchain.
 26. **Reactory Drone** - Module can receive and send drone flight instructions over a graph api. Intended to run on reactory server instances that run on micro computers like Raspberry Pi
 ## Partner Products
-1. **Reactory Reshuffle** - Server module and plugins that provides project management and forecasting solutions with integration into Harvest and automated workflow.
+These are products that have been developed with partners and could be made available as licensed components within a business.
+1. **Reactory Reshuffle** - Server module and plugins that provides project management and forecasting solutions with integration into Harvest and automated workflow. (ALPHA)
 2. **Reactory Survey** - Server and plugins for running leadership and staff development surveys. Supports team and individual style surveys with a focus on staff development and performance management.  

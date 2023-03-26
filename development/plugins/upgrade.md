@@ -1,3 +1,4 @@
+![Build Anything Fast](/branding/reactory-logo.png)
 # Upgrading BETA plugin to V1.
 Copy the dependencies, devDepencies and peerDependencies from package.json in reactory-client-core/package.json. These are the base requirements for compiling 
 a client plugin. 
