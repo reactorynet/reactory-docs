@@ -4,6 +4,7 @@ Welcome to Reactory Documents. This is a starting point for your journey with Re
 
 *!!Please note, the documentation is a contual work in progress and will rapidly be updated so subscribe to the repo and be on the lookout for new developments.*
 
+The Server and Client repos will be made public soon, we triggered a few warnings on initial public visibility and have to correct a few items.
 ## Reactory: A RAD Framework for Enterprise Grade Web and Native React Applications
 
 Reactory is a powerful RAD (Rapid Application Development) framework designed for software engineers to rapidly prototype and develop enterprise-grade web and native React applications. The framework consists of multiple components that work together to provide developers with the tools necessary to create high-quality applications in a fraction of the time it would typically take.
