@@ -1,10 +1,9 @@
-![Build Anything Fast](/branding/reactory-logo.png)
+![Build Anything Fast](./img/banner.png)
 # Reactory Documents
 Welcome to Reactory Documents. This is a starting point for your journey with Reactory. This project will only contain documentation, samples and links to resources for further reading. 
 
 *!!Please note, the documentation is a contual work in progress and will rapidly be updated so subscribe to the repo and be on the lookout for new developments.*
 
-The Server and Client repos will be made public soon, we triggered a few warnings on initial public visibility and have to correct a few items.
 ## Reactory: A RAD Framework for Enterprise Grade Web and Native React Applications
 
 Reactory is a powerful RAD (Rapid Application Development) framework designed for software engineers to rapidly prototype and develop enterprise-grade web and native React applications. The framework consists of multiple components that work together to provide developers with the tools necessary to create high-quality applications in a fraction of the time it would typically take.
@@ -36,13 +35,15 @@ Reactory Server is an open-source, highly configurable and extensible Express No
 
 The primary API of the Reactory Server is configured for GraphQL based API interaction, and it comes with some REST APIs. Developers can also extend the application with additional REST APIs should they have a need for REST based interaction with some of their components. However, it is recommended to stick to building on top of the graph.
 
+We're adding grpc support in our v1.1.0 release.
+
 ### Rich Client Interface Dynamically at Runtime
 
 The server is capable of delivering a rich client interface dynamically at runtime, by using JIT compilation and deployment and auto-recompilation when source modules change. This feature makes it possible for developers to build high-quality applications quickly and efficiently, without compromising on features.
 
 ### Multi-Tenancy Support
 
-Reactory Server provides built-in support for multi-tenancy, enabling developers to create applications that can serve multiple organizations with a single instance of the reactory server.
+Reactory Server provides built-in support for multi-tenancy, enabling developers to create applications that can serve multiple organizations with a single instance of the reactory server. 
 
 ### Low Overhead and Perfect for Low Budget
 
