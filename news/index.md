@@ -1,6 +1,13 @@
 ![Build Anything Fast](/branding/reactory-logo.png)
 
-# Open Sourcing Reactory - A Tried and Tested Platform for Building Web Apps
+### April 05 2021 - Configuration utility
+Check out the [addconfig.sh](/https://github.com/reactorynet/reactory-express-server/blob/master/bin/addconfig.sh) script to guide you through creating a new configuration file.  The utility will walk you through each configuration setting as well as provide help for each element. It will also allow you to create a new configuration file for a new client.
+
+The utility is still a work in progress but it will create the key configuration settings for you.
+
+We've also made public the react-azure module that is currently a dependency for the core server. We will be refactoring the core server to remove this dependency and make it more generic.  The react-azure module is a wrapper around the Azure SDK and O365 services for Node.js.  It provides a simple interface for interacting with Azure services.
+
+### March 26, 2023 - Open Sourcing Reactory - A Tried and Tested Platform for Building Web Apps
 
 Hello everyone, 
 

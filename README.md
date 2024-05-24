@@ -18,7 +18,11 @@ Reactory employs a three C's approach to software design that is based on the fo
 
 - **Customization**: When neither convention nor configuration can provide the best user interface, full customization is required. Developers can fully customize the system to meet their specific needs, enabling them to create the best possible solution for their project.
 
+<img src="/branding/three_cs.png" width="800" height="400" />
+
 ### Server and SPA Web Client
+
+![Reactory Architecture](/branding/reactory_architecture_overview.png)
 
 Reactory consists of a server and a Single Page Application (SPA) web client that work together to provide a comprehensive solution for enterprise-grade web applications. The server provides the backend infrastructure necessary to support the application, while the SPA web client provides a fast and responsive front-end interface for users.
 
