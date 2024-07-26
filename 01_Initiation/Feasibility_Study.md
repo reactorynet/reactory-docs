@@ -89,7 +89,7 @@ Reactory is an open-source Rapid Application Development (RAD) framework designe
   - Release additional pre-built components and templates.
   - Implement and test security features.
   - Enhance integration capabilities.
-- **Timeline**: Detailed project timeline with specific milestones and deadlines.
+- **Timeline**: TODO: Detailed project timeline with specific milestones and deadlines.
 
 ### 5.3 Maintenance and Support
 - Ongoing platform maintenance to ensure stability and performance.
