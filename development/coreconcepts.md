@@ -1,4 +1,4 @@
-![Build Anything Fast](/branding/reactory-logo.png)
+![Build Anything Fast](../branding/reactory-logo.png)
 # Core Concepts
 At Reactory, we focus on velocity to ensure a quick time-to-market for software development. Our goal is to test software with real users and learn from the assumptions as quickly as possible.
 
