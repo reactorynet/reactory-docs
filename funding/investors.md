@@ -1,4 +1,4 @@
-![Build Anything Fast](/branding/reactory-logo.png)
+![Build Anything Fast](../branding/reactory-logo.png)
 # Reactory Investor Relations
 
 Dear potential angel investor,
@@ -14,13 +14,3 @@ Our team includes an experienced architect and designer who has a proven track r
 We are open to discussing investment opportunities with interested parties. Please contact us at werner.weber@reactory.net to discuss further. Please note all IP is owned by Werner Weber. Mr. Weber is currently full time employed as Principal Engineer with a fintech organization and Reactory is currently a part-time project. Any investments at this stage would be set towards setting up a non-profit organization for the core product IP and setting up a brain trust and engineering council to steer the open source efforts.
 
 Thank you for considering Reactory as an investment opportunity.
-
-Sincerely,
-
-Werner Weber and the Reactory Team
-
-
-
-
-Regenerate response
-
