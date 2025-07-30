@@ -1,4 +1,4 @@
-![Build Anything Fast](/branding/reactory-logo.png)
+![Build Anything Fast](../branding/reactory-logo.png)
 # Product Roadmap
 This document will describe the various products, their current versions and their roadmap. 
 

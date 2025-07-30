@@ -93,14 +93,6 @@ Find a below a list for getting started with Reactory.
 * [News](news/index.md) - What's happening
 
 
-### Conclusion
-
-Reactory Server is a powerful and flexible platform for building enterprise-grade web applications quickly and efficiently. The built-in support for multi-tenancy, dynamic user interfaces, RBAC, theming, plugins, and more make it easy for developers to create custom solutions that meet the unique needs of each project. This is especially useful for organizations with complex requirements that require a tailored approach to application development.
-
-The server's highly configurable and extensible nature makes it even more useful for developers. They can choose to use the server on its own or with the Reactory Client to create high-quality applications that can serve multiple organizations with ease. This flexibility provides developers with the freedom to choose the best approach for their project, without compromising on quality or functionality.
-
-Reactory's three C's approach to software design - conventions, configurations, and customization - is another key advantage of the platform. This approach empowers developers to rapidly create high-quality applications that meet their unique requirements, whether they prefer to work with established conventions, configurations, or fully customize their solutions. This allows developers to work more efficiently and effectively than ever before, creating applications that are tailored to their organization's specific needs.
-
 ![Build Anything Fast](./branding/factory.png)
 
 ***Disclaimer: The authors of this source code provide it "as is" without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the authors be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software. Use at your own risk.***
