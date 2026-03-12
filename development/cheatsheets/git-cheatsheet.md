@@ -262,12 +262,69 @@ git submodule update --remote  # Update to latest remote
 Manage repositories within repositories.
 
 ### Worktree
+
+Work on multiple branches simultaneously without stashing or cloning.
+
+#### Creating Worktrees
 ```bash
-git worktree add <path> <branch>  # Create new worktree
-git worktree list  # List all worktrees
-git worktree remove <path>  # Remove worktree
+git worktree add <path> <branch>          # Check out existing branch in new worktree
+git worktree add <path> -b <new-branch>   # Create new branch and check it out
+git worktree add <path>                   # Create detached HEAD worktree at current commit
+git worktree add <path> <commit-hash>     # Check out specific commit (detached HEAD)
+git worktree add --detach <path> <branch> # Explicitly detached HEAD from branch
+git worktree add -b <new-branch> <path> <base-branch>  # New branch from a base
 ```
-Work on multiple branches simultaneously.
+
+#### Listing and Inspecting
+```bash
+git worktree list                  # List all worktrees (path, HEAD, branch)
+git worktree list --porcelain      # Machine-readable output
+```
+
+#### Locking and Unlocking
+```bash
+git worktree lock <path>                        # Lock a worktree (prevent pruning)
+git worktree lock --reason "on slow NFS" <path> # Lock with a reason message
+git worktree unlock <path>                      # Unlock a worktree
+```
+
+#### Moving Worktrees
+```bash
+git worktree move <path> <new-path>  # Move a worktree to a new location
+```
+
+#### Removing Worktrees
+```bash
+git worktree remove <path>        # Remove a worktree (must be clean)
+git worktree remove --force <path> # Force remove even with uncommitted changes
+git worktree prune                 # Remove stale worktree admin files
+git worktree prune --dry-run       # Preview what prune would remove
+git worktree prune --expire <time> # Prune worktrees older than <time> (e.g. "now")
+```
+
+#### Common Workflows
+```bash
+# Hotfix while mid-feature
+git worktree add ../hotfix hotfix/issue-42
+cd ../hotfix && git commit -am "fix: patch critical bug" && cd -
+git worktree remove ../hotfix
+
+# Review a PR without leaving your branch
+git worktree add ../review origin/pr-branch
+cd ../review
+# ...review, test...
+git worktree remove ../review
+
+# Work on multiple features in parallel
+git worktree add ../feature-a feature/a
+git worktree add ../feature-b feature/b
+```
+
+#### Notes
+- Each worktree shares the same `.git` directory — branches, remotes, and objects are shared
+- A branch can only be checked out in **one** worktree at a time
+- Worktrees are listed by `git branch` with a `+` indicator
+- Use `--force` when adding a worktree for a branch that is already checked out elsewhere (creates a detached HEAD)
 
 ## Configuration Tips
 
