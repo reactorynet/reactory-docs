@@ -95,9 +95,12 @@ even roles.
 `reactory-pwa-client/src/api/ReactoryApi.tsx:1592` (`registerComponent`);
 `reactory-express-server/src/application/decorators/service.ts`.
 
-> **Caveat:** version pinning is parsed but not enforced on the client. `resolveFqn` logs
-> `ignoring @version suffix … (version pinning not yet enforced)`. Treat the `@version` segment as
-> documentation today, not as a resolution constraint. **[WIP]**
+> **Version resolution (client).** An exact `nameSpace.name@version` match wins. An unversioned FQN
+> means `@1.0.0` when that is registered, else the highest registered version. A versioned FQN with
+> no exact match resolves to the highest compatible version (same major, not lower). When only
+> incompatible versions are registered the client warns and uses the highest for now;
+> `REACT_APP_FQN_VERSION_MODE=strict` refuses it, and strict becomes the default after one release.
+> Code: `reactory-pwa-client/src/api/componentResolution.ts`. Server-side resolution is unchanged.
 
 ### 3.2 The server drives the client
 
