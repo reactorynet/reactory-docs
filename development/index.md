@@ -9,6 +9,7 @@ Below is a list of topics covered under development.
 4. [Reactory Client Plugins](plugins/overview.md)
 5. [Data Mapping](datamapping/objectmapping.md)
 6. [Development Tools](tools.md)
-7. [Code of Conduct](conduct.md)
+7. [Internationalisation (i18n)](i18n.md)
+8. [Code of Conduct](conduct.md)
 
 We're in the process of making instructional videos, so check back soon as those will be included here.
