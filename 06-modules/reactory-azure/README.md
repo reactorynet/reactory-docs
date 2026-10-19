@@ -22,7 +22,9 @@ precisely because it is small: it shows the build order in one directory, and it
 which steps are optional, which are missing, and what happens when a vendor wrapper is mistaken for
 a service.
 
-This page follows the [module documentation template](../../08-contributing/module-doc-template.md).
+This page follows the [module documentation template](../../08-contributing/module-doc-template.md)
+with the optional worked-example section added, so the template's §9 and §10 appear here as §9, §10
+and §11.
 The architecture it implements is described in [§5 of `PLATFORM.md`](../../PLATFORM.md#5-the-module-system).
 Complete implementations to compare against are [`reactory-core`](../reactory-core/README.md) and
 [`reactory-reactor`](../reactory-reactor/README.md); the full registry is in the
@@ -46,7 +48,8 @@ should not be sold, supported or deployed as a commercial Azure integration.
 | What is it? | A worked example of wrapping Microsoft Graph and scaffolding Azure storage | `src/modules/reactory-azure/README.md:1-2` |
 | Is it supported? | No. Self-described as "purely an example submodule" | `src/modules/reactory-azure/AGENT.md:5`, `:56-58` |
 | Does it load? | Yes — imported by the generated module barrel and listed in the registry | `src/modules/__index.ts:13`, `:32` |
-| Do the Graph calls work? | No — `Client` and `ResponseType` are never imported, so the first call fails | `src/modules/reactory-azure/services/graph.ts:12`, `:38` |
+| Do the Graph calls work? | No — `Client` and `ResponseType` are never imported; eight methods throw, `sendEmail` catches the error and returns a non-result | `src/modules/reactory-azure/services/graph.ts:12`, `:38`, `:216-225` |
+| Is the type contract complete? | No — the interface declares eight of the nine implemented methods | `src/modules/reactory-azure/types.d.ts:13-30`, `src/modules/reactory-azure/services/graph.ts:105` |
 | Does it contribute services? | No — `services: []` and `services/index.ts` exports an empty array | `src/modules/reactory-azure/index.ts:22`, `src/modules/reactory-azure/services/index.ts:3` |
 | Does it expose GraphQL? | No — `graphDefinitions` is an empty object and an empty array | `src/modules/reactory-azure/index.ts:15-18` |
 | Does it persist anything? | No — `models: []` | `src/modules/reactory-azure/index.ts:19` |
@@ -86,11 +89,14 @@ direct source import:
 caller in either repository. `sendEmail` exists only as commented-out code in core's email service
 (`src/modules/reactory-core/services/EmailService.ts:135`).
 
-**None of the nine methods can execute as written.** Every method goes through
+**None of the nine implemented methods can execute as written.** Every method goes through
 `getAuthenticatedClient`, which calls `Client.init` (`src/modules/reactory-azure/services/graph.ts:12`)
 but `Client` is never imported; `getProfileImage` also references `ResponseType`
-(`src/modules/reactory-azure/services/graph.ts:38`). The first Graph call therefore raises
-`ReferenceError: Client is not defined`. The wiring exists; the dependency does not.
+(`src/modules/reactory-azure/services/graph.ts:38`). Eight of the nine call the factory outside any
+`try`, so the first call raises `ReferenceError: Client is not defined`. `sendEmail` calls the same
+factory *inside* a `try` (`src/modules/reactory-azure/services/graph.ts:216-223`), so it catches and
+logs that error and then returns the Express `response` object instead of a Graph result — see §5
+and §10. The wiring exists; the dependency does not, and one method hides the failure.
 
 ### Measured surface
 
@@ -265,7 +271,7 @@ shape; a malformed object fails later, during schema composition.
 | File | What it contains | Registered? | Evidence |
 |---|---|---|---|
 | `services/index.ts` | `export default [];` | No | `src/modules/reactory-azure/services/index.ts:3` |
-| `services/graph.ts` | A plain object `MSGraph` with nine Graph methods | No | `src/modules/reactory-azure/services/graph.ts:27` |
+| `services/graph.ts` | A plain object `MSGraph` with nine Graph methods; the interface declares eight | No | `src/modules/reactory-azure/services/graph.ts:27` |
 
 `services/index.ts` exports an empty array, so `services: [...services]` in the module object
 resolves to `services: []` (`src/modules/reactory-azure/index.ts:22`). The service registry walks
@@ -274,21 +280,28 @@ each enabled module and logs `Module <name>: (0) services found.` for an empty a
 
 ### What the Graph object wraps
 
-`MSGraph` implements `Reactory.MicrosoftGraph.Service.IMicrosoftGraph`
-(`src/modules/reactory-azure/types.d.ts:13-30`). Each method is a thin call to Microsoft Graph with
-a caller-supplied OAuth access token.
+`MSGraph` is annotated `Reactory.MicrosoftGraph.Service.IMicrosoftGraph`, declared at
+`src/modules/reactory-azure/types.d.ts:13-30`. That interface declares **eight** operations; the
+implementation has **nine**. `getEmails` is implemented
+(`src/modules/reactory-azure/services/graph.ts:105`) but is not declared on the interface — and it is
+one of the two methods `reactory-core` actually calls. The annotation at
+`src/modules/reactory-azure/services/graph.ts:27` therefore makes `getEmails` an excess property and
+keeps it out of the exported type; §10 records the two compiler diagnostics this produces.
+
+Each **declared** method is a thin call to Microsoft Graph with a caller-supplied OAuth access
+token. The table below lists all nine implemented methods and marks the undeclared one.
 
 | Method | Graph endpoint | API version | Notes | Evidence |
 |---|---|---|---|---|
 | `getProfileImage` | `GET /me/photos/{size}/$value` | v1.0 | Returns a `data:image/jpeg;base64,...` string; logs and returns `null` on failure | `src/modules/reactory-azure/services/graph.ts:28-63` |
 | `getUserDetails` | `GET /me?$select=mail,givenName,surname` | v1.0 | Optionally fetches the avatar and attaches it as `avatar` | `src/modules/reactory-azure/services/graph.ts:64-91` |
 | `getEvents` | `GET /me/events` | v1.0 | Calendar events; no caller in either repository | `src/modules/reactory-azure/services/graph.ts:93-103` |
-| `getEmails` | `GET /me/messages` | v1.0 | Supports `filter.search`; swallows errors and returns `[]` | `src/modules/reactory-azure/services/graph.ts:105-133` |
+| `getEmails` | `GET /me/messages` | v1.0 | Supports `filter.search`; swallows errors and returns `[]`. **Not declared on `IMicrosoftGraph`** — see §10 | `src/modules/reactory-azure/services/graph.ts:105-133` |
 | `getTasks` | `GET /me/outlook/tasks` | beta | Accepts a `filter` argument but ignores it | `src/modules/reactory-azure/services/graph.ts:135-143` |
 | `getTask` | `GET /me/outlook/tasks/{id}` | beta | Single task; no caller | `src/modules/reactory-azure/services/graph.ts:145-153` |
 | `createTask` | `POST /me/outlook/tasks` | beta | Builds `startDateTime`/`dueDateTime`; no caller | `src/modules/reactory-azure/services/graph.ts:167-191` |
 | `deleteTask` | `DELETE /me/outlook/tasks/{id}` | beta | Returns the (usually empty) delete response; no caller | `src/modules/reactory-azure/services/graph.ts:155-165` |
-| `sendEmail` | `POST /me/sendMail` | beta | Swallows errors, then throws `ReferenceError` on every path (block-scoped `response`) | `src/modules/reactory-azure/services/graph.ts:193-226` |
+| `sendEmail` | `POST /me/sendMail` | beta | Calls the factory inside a `try`; catches and logs `Client is not defined`, then returns the Express `response` export — a failed send looks like success | `src/modules/reactory-azure/services/graph.ts:4`, `:193-226` |
 
 There is no identity service in the Azure AD/Entra sense. `getUserDetails` reads the signed-in
 user's profile; there is no user creation, group management, directory lookup, app-only token
@@ -470,8 +483,8 @@ on identifiers that are never imported.
 - **Credential storage:** none in this module; delegated tokens live on the user record.
 - **Rotation/refresh:** handled outside the module, and only on the profile path.
 - **Observability:** hardcoded Graph debug logging; no metrics, retries or rate limiting.
-- **Failure behaviour:** `getEmails` returns `[]`; `sendEmail` swallows the error and then throws a
-  `ReferenceError`.
+- **Failure behaviour:** `getEmails` returns `[]`; `sendEmail` catches the error, logs it, and
+  returns the Express `response` export — a failed send is indistinguishable from a successful one.
 
 ---
 
@@ -487,7 +500,7 @@ what `reactory-azure` does, and names the file and line. Where the example stops
 |---|---|---|---|
 | 1 | Declare the module in the registry | Registry entry with FQN `core.ReactoryAzure@1.0.0` | Done, but licence metadata is wrong |
 | 2 | Write the module object | `index.ts` with identity and dependency | Done, with every payload empty |
-| 3 | Wrap the vendor API | `services/graph.ts` with nine methods | Wrapper exists; not registered |
+| 3 | Wrap the vendor API | `services/graph.ts` with nine methods, eight of them declared | Wrapper exists; not registered; one method missing from the interface |
 | 4 | Decide the data model | `models: []` | No persistence; defensible |
 | 5 | Expose GraphQL | `graphDefinitions: { Resolvers: {}, Types: [] }` | Not done |
 | 6 | Contribute workflows | `workflows: [...[]]` | Not done |
@@ -565,10 +578,12 @@ The wrapper is `src/modules/reactory-azure/services/graph.ts`. It has three part
 
 1. A client factory that accepts a token and an API version
    (`src/modules/reactory-azure/services/graph.ts:10-23`).
-2. A TypeScript interface describing the nine operations
-   (`src/modules/reactory-azure/types.d.ts:13-30`).
-3. A plain object implementing that interface
-   (`src/modules/reactory-azure/services/graph.ts:27`).
+2. A TypeScript interface declaring **eight** of the nine operations
+   (`src/modules/reactory-azure/types.d.ts:13-30`). `getEmails` is implemented at
+   `src/modules/reactory-azure/services/graph.ts:105` but never declared — see §10.
+3. A plain object annotated with that interface
+   (`src/modules/reactory-azure/services/graph.ts:27`), which is why the ninth method is an excess
+   property rather than a silent omission.
 
 The factory is the useful part to copy:
 
@@ -785,7 +800,9 @@ Read both pages together: Google is the destination, Azure is the smallest hones
 | 6 | Storage scaffold is an empty class and is never imported | 1 file, 0 methods after comments | `src/modules/reactory-azure/storage/index.ts:10-88` |
 | 7 | Graph code references identifiers that are never imported | `Client` at `:12`, `ResponseType` at `:38`, `Microsoft.*` at `:196-204` | `src/modules/reactory-azure/services/graph.ts:12`, `:38`, `:196-204` |
 | 8 | Graph client dependency is undeclared | `@microsoft/microsoft-graph-client` absent from `package.json` and lockfile | `src/modules/reactory-azure/package.json:29-33` |
-| 9 | `sendEmail` returns a block-scoped variable outside its scope | `const response` at `:217`, `return response` at `:225` | `src/modules/reactory-azure/services/graph.ts:217-225` |
+| 9 | `sendEmail` cannot report a failed send | Graph call is inside `try` at `:217`; `Client is not defined` is caught at `:221-223` and logged; `return response` at `:225` returns the Express export imported at `:4` | `src/modules/reactory-azure/services/graph.ts:4`, `:216-225` |
+| 9a | `IMicrosoftGraph` omits `getEmails` | interface declares 8 methods; implementation has 9 | `src/modules/reactory-azure/types.d.ts:13-30`, `src/modules/reactory-azure/services/graph.ts:105` |
+| 9b | The omission is a compile error in a `noImplicitAny` project, not a style issue | `TS2353` on the annotated object literal; `TS2339` at core's call site | `src/modules/reactory-azure/services/graph.ts:27`, `src/modules/reactory-core/resolvers/Emails/UserEmails.ts:22` |
 | 10 | `getEmails` hides failures as empty results | returns `[]` after catch | `src/modules/reactory-azure/services/graph.ts:108`, `:128-132` |
 | 11 | `getTasks` accepts a filter and ignores it | signature at `:135`, no filter use in `:136-140` | `src/modules/reactory-azure/services/graph.ts:135-143` |
 | 12 | Graph debug logging is hardcoded on | `debugLogging: true` | `src/modules/reactory-azure/services/graph.ts:16` |
@@ -804,11 +821,20 @@ dependency of core rather than a runtime module contribution. Removing the modul
 `enabled-reactory.json` would not remove the import; replacing it with another vendor module would
 require editing core. That is the opposite of the module system's purpose.
 
-Limitations 7–9 mean the wrapper is not currently type-safe, runnable or reliable: the Graph client
-and response type are never imported, the Graph client package is not declared, and `sendEmail`
-cannot return successfully. The `getUserDetails` path that core actually calls is not exempt: it
-goes through `getAuthenticatedClient`, so it fails at the same `Client.init` line. This page records
-the wiring, not a working integration.
+Limitations 7–9b mean the wrapper is neither runnable nor type-safe nor reliable.
+
+`Client` and `ResponseType` are never imported and the Graph client package is not declared, so the
+eight methods that call the factory outside a `try` throw `ReferenceError: Client is not defined` —
+including the `getUserDetails` path core actually calls. `sendEmail` is worse than broken: it catches
+that same error, logs it, and returns a truthy Express object, so a failed send is indistinguishable
+from a successful one. That is the defect a reader is most likely to reproduce, and it is invisible
+in the return value.
+
+Separately, the interface declares eight of the nine implemented operations. `getEmails` — one of the
+two methods core actually calls — is an excess property on the annotated object literal (`TS2353`)
+and absent from the exported type (`TS2339` at the core call site). Declaring
+`getEmails(token: string, filter: any): Promise<any>` on `IMicrosoftGraph` is the one-line fix. This
+page records the wiring, not a working integration.
 
 ### Roadmap
 
@@ -822,8 +848,15 @@ present in this repository. The candidates raised by the evidence above are:
   with `context.getService` instead of importing the file.
 - **Declare the Graph dependency.** Add `@microsoft/microsoft-graph-client` and import `Client` and
   `ResponseType`; add `@microsoft/microsoft-graph-types` for the `Microsoft.*` types.
-- **Fix `sendEmail`.** Move `const response` outside the `try` block, return it on success, and
-  rethrow or return a typed error on failure.
+- **Fix `sendEmail`.** The call is inside the `try` and the `return response` at `:225` falls through
+to the Express import at `:4`, so every failure returns a truthy non-result. Hoist the result into a
+variable that is actually in scope at the return, return the Graph result on success, and rethrow or
+return a typed error on failure.
+- **Declare `getEmails` on the interface.** Add
+  `getEmails(token: string, filter: any): Promise<any>` to `IMicrosoftGraph`
+  (`src/modules/reactory-azure/types.d.ts:13-30`). That removes the `TS2353` excess-property error at
+  `src/modules/reactory-azure/services/graph.ts:27` and the `TS2339` at
+  `src/modules/reactory-core/resolvers/Emails/UserEmails.ts:22` in one line.
 - **Decide the storage question.** Either implement `AzureBlobStorage` against the v12 SDK as a
   registered file backend, or delete `storage/` from the example.
 - **Correct `AGENT.md`.** Point at `storage/index.ts`, fix the profile-image endpoint, and state that
@@ -908,8 +941,9 @@ Every claim in this page resolves to a file and a line in the
 | 53 | Create-task method | `src/modules/reactory-azure/services/graph.ts:167-191` |
 | 54 | Send-email method | `src/modules/reactory-azure/services/graph.ts:193-226` |
 | 55 | `Microsoft.*` types used without a value import | `src/modules/reactory-azure/services/graph.ts:196-204` |
-| 56 | Send-email `const response` is inside `try` | `src/modules/reactory-azure/services/graph.ts:217` |
-| 57 | Send-email returns the block-scoped variable | `src/modules/reactory-azure/services/graph.ts:225` |
+| 56 | Send-email declares `const response` inside `try`, shadowing the Express import only within that block | `src/modules/reactory-azure/services/graph.ts:217` |
+| 57 | Send-email's `return response` resolves to the Express `response` import, not the block-scoped `const` | `src/modules/reactory-azure/services/graph.ts:4`, `:225` |
+| 57a | The Graph factory call is inside the `try`, so `Client is not defined` is caught and logged | `src/modules/reactory-azure/services/graph.ts:216-223` |
 | 58 | Service registry logs `(0) services found` | `src/services/ServiceManager.ts:51` |
 | 59 | Service registry iterates `module.services` | `src/services/ServiceManager.ts:44-93` |
 | 60 | GraphQL type aggregation | `src/models/graphql/types/index.ts:6-16` |
@@ -921,7 +955,10 @@ Every claim in this page resolves to a file and a line in the
 
 | # | Claim | Evidence |
 |---|---|---|
-| 64 | Graph interface has nine methods | `src/modules/reactory-azure/types.d.ts:13-30` |
+| 64 | Graph interface declares eight methods | `src/modules/reactory-azure/types.d.ts:13-30` |
+| 64a | `getEmails` is implemented but not declared on the interface | `src/modules/reactory-azure/services/graph.ts:105` |
+| 64b | `MSGraph` is annotated with `IMicrosoftGraph`, making `getEmails` an excess property (`TS2353`) | `src/modules/reactory-azure/services/graph.ts:27` |
+| 64c | Core calls the undeclared `getEmails` through the typed export (`TS2339`) | `src/modules/reactory-core/resolvers/Emails/UserEmails.ts:22` |
 | 65 | Graph types are imported type-only | `src/modules/reactory-azure/types.d.ts:2` |
 | 66 | Storage imports `AnonymousCredential` | `src/modules/reactory-azure/storage/index.ts:1-3` |
 | 67 | Storage defaults and env key | `src/modules/reactory-azure/storage/index.ts:5-8` |

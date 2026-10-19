@@ -213,7 +213,9 @@ function checkMandatoryClaims(markdown) {
     ['records the empty GraphQL contribution', /graphDefinitions[\s\S]{0,80}Types: \[\]/],
     ['records that `Client` and `ResponseType` are unimported', /`Client`[\s\S]*`ResponseType`[\s\S]{0,200}(never imported|not imported|unimported)|(never imported|not imported|unimported)[\s\S]{0,200}`Client`[\s\S]*`ResponseType`/i],
     ['records the missing Graph client dependency', /@microsoft\/microsoft-graph-client/],
-    ['records the `sendEmail` scope defect', /sendEmail[\s\S]{0,400}ReferenceError|ReferenceError[\s\S]{0,400}sendEmail/i],
+    ['records that `sendEmail` catches the failure and returns the Express `response`', /sendEmail[\s\S]{0,400}(catches?|caught)[\s\S]{0,200}(Express|express)[\s\S]{0,80}`?response`?/i],
+    ['records that the interface declares eight methods', /interface declares \*\*eight\*\*|declares eight|eight methods/i],
+    ['records that `getEmails` is not declared on the interface', /`getEmails`[\s\S]{0,300}(not declared|absent from|omits)/i],
     ['records the core direct import', /reactory-azure\/services\/graph/],
     ['records the storage scaffold as empty', /empty class|scaffold/i],
   ];
@@ -221,6 +223,118 @@ function checkMandatoryClaims(markdown) {
   const missing = claims.filter(([, re]) => !re.test(markdown)).map(([label]) => label);
   if (missing.length > 0) fail('mandatory claims stated', missing.join('; '));
   else pass('mandatory claims stated', `${claims.length} claims`);
+}
+
+function checkTypeContract(markdown) {
+  if (!AZURE) return;
+
+  const types = read(path.join(AZURE, 'types.d.ts'));
+  const block = /export interface IMicrosoftGraph\s*\{([\s\S]*?)\n\s{6}\}/.exec(types);
+  if (!block) {
+    fail('IMicrosoftGraph is parseable', 'interface block not found in types.d.ts');
+    return;
+  }
+
+  const declared = [...block[1].matchAll(/^\s+([A-Za-z_]\w*)\s*\(/gm)].map((m) => m[1]);
+  const graph = read(path.join(AZURE, 'services', 'graph.ts'));
+
+  if (declared.length !== 8) {
+    fail('interface declares eight methods', `${declared.length} found: ${declared.join(', ')}`);
+  } else {
+    pass('interface declares eight methods', declared.join(', '));
+  }
+
+  if (declared.includes('getEmails')) {
+    fail(
+      'interface omits `getEmails` (the documented limitation)',
+      'getEmails is now declared — remove limitation 9a and this check',
+    );
+  } else if (!/async getEmails\s*\(/.test(graph)) {
+    fail('interface omits `getEmails` (the documented limitation)', 'getEmails is not implemented either');
+  } else {
+    pass('interface omits `getEmails` (the documented limitation)', 'implemented, undeclared');
+  }
+
+  if (!/const MSGraph:\s*Reactory\.MicrosoftGraph\.Service\.IMicrosoftGraph\s*=/.test(graph)) {
+    fail('object literal is annotated with the interface', 'annotation absent or changed');
+  } else {
+    pass('object literal is annotated with the interface', 'TS2353 excess property applies');
+  }
+
+  // The page's stated counts must match the parsed reality, in both directions.
+  // The old claim was that the interface described all nine operations. Forbid that
+  // specific attribution; "eight of the nine operations" is the correct form.
+  const wrongClaim = /(?:interface|describ\w*|declar\w*)\s+(?:the\s+)?nine\s+(?:methods|operations|graph\s+methods)/i.test(markdown)
+    || /interface has nine/i.test(markdown);
+  if (!/declares \*\*eight\*\*|declares eight/i.test(markdown)) {
+    fail('page states the real declaration count', 'eight methods not stated');
+  } else if (wrongClaim) {
+    fail('page states the real declaration count', 'page still attributes all nine methods to the interface');
+  } else {
+    pass('page states the real declaration count', 'eight declared, nine implemented');
+  }
+}
+
+function checkSendEmailControlFlow(markdown) {
+  if (!AZURE) return;
+
+  const graph = read(path.join(AZURE, 'services', 'graph.ts'));
+  const problems = [];
+
+  if (!/import \{ response \} from ['"]express['"]/.test(graph)) {
+    problems.push('express `response` is no longer imported at module scope');
+  }
+
+  const start = graph.indexOf('async sendEmail');
+  const end = graph.indexOf('\n};', start);
+  const send = graph.slice(start, end === -1 ? undefined : end);
+  const tryAt = send.indexOf('try {');
+  const catchAt = send.indexOf('} catch');
+  const callAt = send.indexOf('getAuthenticatedClient(');
+  const returnAt = send.lastIndexOf('return response;');
+
+  if (tryAt === -1 || catchAt === -1) problems.push('try/catch shape changed');
+  if (callAt === -1) problems.push('getAuthenticatedClient call absent');
+  if (returnAt === -1) problems.push('return response absent');
+  if (tryAt !== -1 && callAt !== -1 && callAt < tryAt) {
+    problems.push('getAuthenticatedClient is now called outside the try (the ReferenceError would escape)');
+  }
+  if (catchAt !== -1 && returnAt !== -1 && returnAt < catchAt) {
+    problems.push('return response is now inside the try');
+  }
+  if (problems.length > 0) {
+    fail('sendEmail control flow matches the page', problems.join('; '));
+    return;
+  }
+
+  pass('sendEmail control flow matches the page', 'call inside try, catch logs, return resolves to the Express import');
+
+  // The page must describe this behaviour, and must not revive the old claim.
+  const describesIt = /catches?[\s\S]{0,200}(Express|express)[\s\S]{0,80}`?response`?/i.test(markdown)
+    || /Express `response`[\s\S]{0,200}(failed send|success)/i.test(markdown);
+  if (!describesIt) {
+    fail('page describes the real sendEmail behaviour', 'caught-error / Express-response description absent');
+  } else {
+    pass('page describes the real sendEmail behaviour', 'caught error, Express object returned');
+  }
+
+  // The wrong claim was specifically that sendEmail throws a scope ReferenceError /
+  // cannot return. `ReferenceError: Client is not defined` is still a true statement
+  // about the eight methods that do not catch, so forbid only the old attributions.
+  const sectionStart = markdown.indexOf('### Limitations');
+  const sectionEnd = markdown.indexOf('### Roadmap');
+  const limitationBlock = markdown.slice(sectionStart, sectionEnd === -1 ? undefined : sectionEnd);
+  const stale = [
+    /block-scoped\s+`?response`?/i,
+    /on every path/i,
+    /cannot return successfully/i,
+    /sendEmail[^.]{0,120}throws?\s+a?\s*`?ReferenceError`?/i,
+  ].filter((re) => re.test(limitationBlock)).map((re) => String(re));
+  if (stale.length > 0) {
+    fail('page does not re-attribute a scope ReferenceError to sendEmail', `stale wording in §10: ${stale.join(', ')}`);
+  } else {
+    pass('page does not re-attribute a scope ReferenceError to sendEmail', 'no block-scoped/throws-ReferenceError attribution');
+  }
 }
 
 function checkCrossLinks(markdown) {
@@ -475,18 +589,10 @@ function checkGraphSource(markdown) {
   if (/from\s+['"]@microsoft\/microsoft-graph-client/.test(graph)) problems.push('Graph client is now imported');
   if (/from\s+['"]@microsoft\/microsoft-graph-types/.test(graph)) problems.push('Graph types are now imported');
 
-  const sendStart = graph.indexOf('async sendEmail');
-  const sendEnd = graph.indexOf('\n};', sendStart);
-  const send = graph.slice(sendStart, sendEnd === -1 ? undefined : sendEnd);
-  if (!/const response\s*=/.test(send)) problems.push('sendEmail response declaration absent');
-  if (!/return response;/.test(send)) problems.push('sendEmail return absent');
-  const catchIndex = send.indexOf('} catch');
-  const returnIndex = send.lastIndexOf('return response;');
-  if (catchIndex === -1) problems.push('sendEmail catch block absent');
-  else if (!(catchIndex < returnIndex)) problems.push('sendEmail return is no longer outside the try block');
-
+  // The sendEmail control flow is asserted semantically in checkSendEmailControlFlow;
+  // this block only covers the unimported-identifier defects shared by all methods.
   if (problems.length > 0) fail('Graph wrapper still has the documented defects', problems.join('; '));
-  else pass('Graph wrapper still has the documented defects', 'unimported Client/ResponseType, block-scoped sendEmail return');
+  else pass('Graph wrapper still has the documented defects', 'Client/ResponseType unimported, Microsoft.* types unimported');
 
   const storage = read(path.join(AZURE, 'storage', 'index.ts'));
   const uncommented = storage
@@ -544,6 +650,8 @@ function main() {
       checkPackageAndRegistry(markdown);
       checkRegistry(markdown);
       checkGraphSource(markdown);
+      checkTypeContract(markdown);
+      checkSendEmailControlFlow(markdown);
     }
   } else if (REQUIRE_SOURCE) {
     fail('server source available', 'cannot locate reactory-express-server; set REACTORY_SERVER_ROOT');
