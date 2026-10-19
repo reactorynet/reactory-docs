@@ -1,0 +1,151 @@
+{
+  "summary": "Finished the reactory-azure reference-page work left by the terminated run and closed both reviewer findings. The page is 1,005 lines under 06-modules/reactory-azure/README.md, documents the module honestly as a reference example (MIT, example-only, not a supported commercial integration), reconciles the stale commercial registry value with evidence, maps all ten build steps to real files, and ships a 34-check verifier. Reviewer RC-1 (interface declares eight methods, getEmails is implemented but undeclared, TS2353/TS2339) and RC-2 (sendEmail catches the missing Client and returns the Express response export rather than throwing) were already corrected in commit 20a8ebf; this run verified those fixes against source and added a further correction distinguishing getEmails' catch from the missing-client failure (d58c4d6). All azure checks pass 34/34, reactor 11/11, and core 25/26 with the single pre-existing generated-reference drift untouched by this branch.",
+  "status": "completed",
+  "ticket": {
+    "reference": "REACTORY-302016408/20261018/2254215113",
+    "request": "[Docs] Module documentation: reactory-azure (reference example)",
+    "type": "documentation",
+    "priority": "low"
+  },
+  "repositories": [
+    {
+      "repo": "reactory-docs",
+      "worktree": "/Users/wernerw/Projects/reactory/reactory-worktrees/ai-reactory-302016408-20261018-2254215113",
+      "branch": "chore/REACTORY-302016408-20261018-2254215113",
+      "base": "master @ 8ba69be",
+      "commits": [
+        "2b94479 docs(azure): document reactory-azure as the reference module example",
+        "20a8ebf docs(azure): correct interface method count and sendEmail failure mode",
+        "d58c4d6 docs(azure): distinguish getEmails catch from the missing-client failure"
+      ],
+      "note": "Primary deliverable. Master untouched; the branch is ready for review and PR."
+    }
+  ],
+  "review_requirements_addressed": [
+    {
+      "id": "RC-1",
+      "requirement": "The interface declares eight methods, not nine; getEmails is implemented but undeclared, producing TS2353 at the annotated object literal and TS2339 at the core call site. The page asserted nine and omitted the defect from §10.",
+      "resolution": "README §1, §5, §9 and §10 now state eight declared / nine implemented, identify getEmails at graph.ts:105 as the undeclared method, record the excess-property diagnosis at graph.ts:27 and the consumer call at UserEmails.ts:22, and add limitations 9a/9b plus evidence rows 64a-64c. The verifier parses types.d.ts and enforces 8, asserts getEmails is absent from the interface while present in graph.ts, and rejects any reintroduction of the nine-method attribution.",
+      "evidence": [
+        "06-modules/reactory-azure/README.md:51-52",
+        "06-modules/reactory-azure/README.md:283-290",
+        "06-modules/reactory-azure/README.md:803-805",
+        "06-modules/reactory-azure/README.md:958-962",
+        "scripts/verify-azure-docs.js:229-276"
+      ]
+    },
+    {
+      "id": "RC-2",
+      "requirement": "sendEmail does not throw a scope ReferenceError. The getAuthenticatedClient call is inside the try, so Client is not defined is caught and logged, and return response resolves to the Express response export, making a failed send look successful. The page described the wrong defect in four places and the verifier hard-coded it.",
+      "resolution": "README §1, §5, §8, §9, §10 and §11 now describe the caught error and the truthy Express export; the old block-scoped/throws-ReferenceError wording is forbidden in the limitations block. The verifier asserts the real control flow (import at :4, factory inside try at :217, catch at :221-223, return at :225) and fails if the code shape changes.",
+      "evidence": [
+        "06-modules/reactory-azure/README.md:51",
+        "06-modules/reactory-azure/README.md:92-98",
+        "06-modules/reactory-azure/README.md:304",
+        "06-modules/reactory-azure/README.md:484-489",
+        "06-modules/reactory-azure/README.md:803",
+        "06-modules/reactory-azure/README.md:829-832",
+        "scripts/verify-azure-docs.js:278-337"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "repo": "reactory-docs",
+      "path": "06-modules/reactory-azure/README.md",
+      "lines": 1005,
+      "what": "Eleven-section page: purpose and status with licence reconciliation; module contract and every extension point; data model (no local model; blob/file-share/queue/table reality); GraphQL (zero); services (two files, zero registrations, nine-method wrapper with eight declared); UI (zero); workflows (one placeholder file, zero definitions); operations (delegated tokens, no connection strings, no tenant configuration, hardcoded debug logging); the §9 build-order walkthrough mapped step by step to real files; 18 measured limitations with roadmap; and a 105-citation evidence index."
+    },
+    {
+      "repo": "reactory-docs",
+      "path": "08-contributing/module-doc-template.md",
+      "lines": 115,
+      "what": "New module documentation template: frontmatter contract, the ten mandatory sections, the optional §9 worked-example section, evidence rules, verification commands and generated-page rules. Names reactory-azure as the canonical sample implementation and links its §9 anchor."
+    },
+    {
+      "repo": "reactory-docs",
+      "path": "PLATFORM.md",
+      "lines": 7,
+      "what": "§5 The module system now cross-links reactory-azure as the canonical worked example of a vendor API becoming a module, and links the template alongside it."
+    },
+    {
+      "repo": "reactory-docs",
+      "path": "06-modules/index.md",
+      "lines": 4,
+      "what": "Regenerated module index: azure moves from not-yet-documented to documented and the documented count moves from 2 to 3."
+    },
+    {
+      "repo": "reactory-docs",
+      "path": "AGENT.md",
+      "lines": 11,
+      "what": "Updates the docs-programme status and documents the three per-module verifiers; no longer claims the 06-modules series is only started with core complete."
+    },
+    {
+      "repo": "reactory-docs",
+      "path": "scripts/verify-azure-docs.js",
+      "lines": 677,
+      "what": "Dependency-free verifier for the page: 34 checks covering filename and frontmatter, eleven ordered sections and no placeholders, mandatory status/licence/behaviour claims, cross-links to PLATFORM.md and the template, index freshness, 105 evidence citations resolving to real files and line ranges, and source checks for file counts, module-object fields, package licence, empty services/workflows, the unimported Graph identifiers, the storage scaffold, core's direct imports, the eight-method interface, the getEmails omission and the real sendEmail control flow. The interface and sendEmail checks were rewritten to match the RC-1/RC-2 corrections."
+    }
+  ],
+  "verification": [
+    {
+      "repo": "reactory-docs",
+      "command": "node scripts/verify-azure-docs.js --require-source",
+      "result": "34/34 checks passed; 105 evidence citations resolved and in range; source checkout /Users/wernerw/Projects/reactory/reactory-express-server"
+    },
+    {
+      "repo": "reactory-docs",
+      "command": "node scripts/verify-reactor-docs.js",
+      "result": "11/11 checks passed — no regression from the shared template/index edits"
+    },
+    {
+      "repo": "reactory-docs",
+      "command": "node scripts/verify-docs.js",
+      "result": "25/26 checks passed. The sole failure is 'generated reference is fresh' for 07-reference/modules/reactory-core.md, a pre-existing drift on master; this branch does not touch 07-reference (git diff 8ba69be shows no 07-reference change)."
+    },
+    {
+      "repo": "reactory-docs",
+      "command": "git diff 8ba69be --stat",
+      "result": "6 files changed, 1813 insertions(+), 6 deletions(-); no generated reference or unrelated file touched"
+    },
+    {
+      "repo": "reactory-express-server (read-only source of truth)",
+      "command": "manual re-read of types.d.ts:13-30, services/graph.ts:4, 10-23, 27, 105-133, 193-226, services/index.ts:3, workflows/index.ts:3, index.ts:8-30, package.json:2-21, available.json:23-31, AGENT.md, README.md",
+      "result": "Every asserted value and defect re-confirmed on the source checkout at 59639fe; nested reactory-azure repo at c962956, matching the page frontmatter."
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "criterion": "Licence/status contradiction resolved",
+      "result": "Met. The page states MIT and example-only as authoritative (package manifest and AGENT.md), records commercial in available.json/enabled-reactory.json/installed.json and the shop URL as the defect, and specifies the exact one-word fix plus shop-URL removal. The generated index still reproduces commercial because it reads available.json; the page explicitly says not to treat that column as authoritative."
+    },
+    {
+      "criterion": "Example walkthrough maps every step to a real file",
+      "result": "Met. §9 has ten steps (registry → module object → vendor wrapper → data model → GraphQL → workflows → forms/UI → storage → runtime registration → verification), each naming real files and lines; 105 citations resolve under the verifier."
+    },
+    {
+      "criterion": "Page cross-linked from the module-system architecture page as the worked example",
+      "result": "Met. PLATFORM.md §5 'The module system' contains a 'Worked example' paragraph linking 06-modules/reactory-azure/README.md, and the template names the same page as the canonical sample implementation."
+    }
+  ],
+  "findings_documented": [
+    "The module registers zero services: services/index.ts is `export default []`, so services: [...services] is empty; MSGraph in services/graph.ts is a plain object with no FQN/namespace/version/factory and is never imported by the service index.",
+    "MSGraph implements nine methods but IMicrosoftGraph declares eight. getEmails (graph.ts:105) — one of only two methods core calls — is an excess property (TS2353) and absent from the exported type (TS2339 at UserEmails.ts:22).",
+    "Client and ResponseType are never imported and the Graph client packages are undeclared, so the eight methods that call the factory outside a try throw `ReferenceError: Client is not defined`; getUserDetails, the path core actually calls, is one of them.",
+    "sendEmail calls the factory inside its try, catches and logs the same ReferenceError, then returns the module-scope Express `response` import at :225 — a truthy non-result, so a failed send is indistinguishable from success.",
+    "getEmails' catch returns the initialised [] for request errors, but its factory call at :107 precedes the try at :109, so today the missing Client escapes before that catch can run.",
+    "The module exposes zero GraphQL types/resolvers, zero models/migrations, zero forms/client plugins/translations/routes/middleware, and zero workflow definitions (workflows/index.ts exports []).",
+    "storage/index.ts is an empty class whose methods are entirely commented out, targets the pre-v12 SDK, reads only AZURE_STORAGE_KEY at import time, hardcodes the Azurite account devstoreaccount1, and is imported by nothing.",
+    "Core bypasses the module contract with two direct source imports (ProfileResolver.ts:6, UserEmails.ts:9), making azure a compile-time dependency of core rather than a runtime contribution.",
+    "The registry contradicts the manifest three ways: package.json/AGENT.md say MIT and README says Example Only, while available.json/enabled-reactory.json/installed.json say commercial and available.json carries a shop URL.",
+    "Package identity drifts from module identity: @reactory/azure 1.1.0 vs core.ReactoryAzure@1.0.0.",
+    "AGENT.md documents storage/AzureBlobStorage.ts (actual: storage/index.ts) and /me/photo/$value (actual: /me/photos/{size}/$value).",
+    "No tests exist in the module."
+  ],
+  "notes_and_followups": [
+    "This run verified and finished the prior two commits rather than restarting; d58c4d6 adds only the getEmails catch-vs-missing-client distinction. The branch is three commits ahead of master 8ba69be and clean.",
+    "The server-side licence metadata is deliberately not changed here: it lives in reactory-express-server, outside this documentation worktree. The page records the exact three-file fix (commercial → MIT and remove the shop URL) so the owner can make it in one change.",
+    "verify-docs.js remains 25/26 because 07-reference/modules/reactory-core.md is stale on master; regenerating it is unrelated to this ticket and would add generated-file churn. It should be regenerated separately with the core page change that caused the drift.",
+    "If the module is ever fixed (service registration, Graph dependency, getEmails declared, sendEmail return, storage implemented or deleted), the page's §1, §5, §8, §9.4, §9.9, §10 and the verifiedAgainst stamp must be updated in the same change."
+  ]
+}
