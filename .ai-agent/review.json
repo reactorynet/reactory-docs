@@ -2,15 +2,17 @@
   "verdict": "approved",
   "repository": "reactorynet/reactory-docs",
   "branch": "chore/REACTORY-302016408-20261018-2254215113",
-  "commit": "d58c4d6",
+  "commit": "7c6b2ba",
   "base": "origin/master @ 8ba69be",
+  "reviewCycle": 0,
   "reviewedArtifacts": [
     "06-modules/reactory-azure/README.md",
     "08-contributing/module-doc-template.md",
     "PLATFORM.md",
-    "06-modules/index.md (regenerated)",
+    "06-modules/index.md",
     "AGENT.md",
-    "scripts/verify-azure-docs.js"
+    "scripts/verify-azure-docs.js",
+    ".ai-agent/report.json"
   ],
   "requiredChanges": [],
   "checks": [
@@ -18,74 +20,119 @@
       "id": "CR-1",
       "area": "Change exists and is scoped",
       "result": "pass",
-      "detail": "The supplied diffstat says 'no changes detected', which is a harness artefact: the worktree is clean because .ai-agent/ is the only untracked path. The branch is 3 commits ahead of origin/master (8ba69be) and git diff 8ba69be..HEAD --stat is exactly the 6 claimed files, 1813 insertions / 6 deletions. Nothing under 07-reference or any unrelated path was touched. I re-read the incident report from disk; it matches the branch."
+      "detail": "The review input's 'no changes detected in the worktree' is a harness artefact: `git status --short` is empty and the branch is four commits ahead of origin/master (2b94479, 20a8ebf, d58c4d6, 8a72b08, 7c6b2ba). The documentation change itself is correctly scoped to six files: 06-modules/reactory-azure/README.md (+1005), 08-contributing/module-doc-template.md (+115), PLATFORM.md (+7), 06-modules/index.md (2/2), AGENT.md (+7/-4) and scripts/verify-azure-docs.js (+677). Nothing under 07-reference or any unrelated docs path is touched. Caveat: the branch/PR also carries .ai-agent/report.json and .ai-agent/review.json (2 files, 245 lines), so the report's 'exactly the 6 intended files, 1813 insertions' describes only the human-readable change, not the actual PR diff (8 files, 2058 insertions). See nonBlocking NB-1."
     },
     {
       "id": "CR-2",
-      "area": "Required scope — all eleven areas",
+      "area": "Required scope — all eleven areas present",
       "result": "pass",
-      "detail": "README.md (1005 lines) has eleven ordered sections: §1 purpose/status + licence reconciliation, §2 module contract with every extension point, §3 data model (no local model; blob/file-share/queue/table reality), §4 GraphQL (zero, with the composition points), §5 services, §6 UI, §7 workflows, §8 operations, §9 the ten-step worked example, §10 limitations/roadmap, §11 a 105-row evidence index. Every item the ticket listed is present; none is stubbed."
+      "detail": "06-modules/reactory-azure/README.md is 1005 lines with eleven ordered sections: §1 purpose/status + licence reconciliation, §2 module contract (FQN core.ReactoryAzure@1.0.0 and every extension point, including the empty ones), §3 data model (no local model; blob/file-share/queue/table reality), §4 GraphQL (zero, with the composition points), §5 services (two files, zero registrations, 8 declared / 9 implemented), §6 UI (zero), §7 workflows (one inert file, zero definitions), §8 operations (delegated tokens, no connection strings, no tenant configuration, hardcoded debug logging), §9 the ten-step worked example, §10 limitations/roadmap, §11 the evidence index. Every item the ticket lists is present and substantive; none is a stub or placeholder."
     },
     {
       "id": "CR-3",
       "area": "Acceptance — licence/status contradiction",
       "result": "pass",
-      "detail": "The page states MIT + example-only as authoritative from the package manifest and AGENT.md, records 'commercial' (available.json:28, enabled-reactory.json:28, installed.json:28) and the shop URL (available.json:30) as the defect, and specifies the exact one-word-per-file fix plus shop-URL removal. The registry values themselves are unchanged because reactory-express-server is outside this worktree; the page explicitly warns that the generated index column still reproduces 'commercial' and must not be treated as authority. That is the strongest resolution available inside a docs-only change. Non-blocking follow-up: raise the three-file server fix as its own ticket so the contradiction is removed at source."
+      "detail": "The page states MIT + example-only as authoritative from package.json:17-21 and AGENT.md:5/:56-58, records the three `commercial` registry values (available.json:28, enabled-reactory.json:28, installed.json:28) and the shop URL (available.json:30) as the defect, and specifies the exact one-word-per-file fix plus shop-URL removal. It also warns that the generated 06-modules/index.md column still reproduces `commercial` until the server metadata is corrected. I independently confirmed all four registry/package facts. The source contradiction still exists in reactory-express-server, which is outside this docs worktree and outside PR #6; the claimed follow-up ticket (REACTORY-302016408/20261019/923623068) is the right ownership boundary for a docs-only change. I could not independently resolve that ticket from the checkout because no ticket store is present, so the follow-up reference should be confirmed before merge if the pipeline treats it as an acceptance dependency. This is the strongest resolution available inside the docs repository and meets the criterion at documentation level."
     },
     {
       "id": "CR-4",
       "area": "Acceptance — example walkthrough maps to real files",
       "result": "pass",
-      "detail": "§9 maps ten build steps (registry → module object → vendor wrapper → data model → GraphQL → workflows → forms/UI → storage → runtime registration → verification) plus a comparison with reactory-google and a copy checklist. I spot-checked the citations against the server checkout at 59639fe: index.ts:8-30 fields, services/index.ts:3, workflows/index.ts:3, graph.ts:27/105/216-225, storage/index.ts:5-8/10-88, __index.ts:13/32, ServiceManager.ts:51, graphql types/index.ts:6-16, resolvers/index.ts:19, directives/index.ts:6, available.json:23-31 — all correct."
+      "detail": "§9 runs ten build steps (registry -> module object -> vendor wrapper -> data model -> GraphQL -> workflows -> forms/UI -> storage -> runtime registration -> verification), plus §9.12 a reactory-google comparison and §9.13 a copy checklist. Each step names real files and lines. I spot-checked the load-bearing citations directly with cat -n: index.ts:8-30 (all 16 fields), services/index.ts:3 and workflows/index.ts:3 (`export default [];`), types.d.ts:13-30 (eight methods, getEmails absent), graph.ts:4/12/16/27/38/105/107-109/216-225, storage/index.ts:1-3/5-8/10-88, package.json:2-3/17-21/29-33, available.json:23-31, __index.ts:13/32, ServiceManager.ts:51, FormService.ts:43-52, SystemService.ts:152, graphql types/index.ts:6-16, resolvers/index.ts:19, directives/index.ts:6. All resolve and match the prose."
     },
     {
       "id": "CR-5",
       "area": "Acceptance — cross-links",
       "result": "pass",
-      "detail": "PLATFORM.md §5 'The module system' gains a Worked example paragraph linking 06-modules/reactory-azure/README.md; the new 08-contributing/module-doc-template.md names the page as the canonical sample and links the #9-worked-example--how-this-module-is-built anchor (anchor resolves under the verifier's GitHub-slug check); 06-modules/index.md moves azure to documented and the count to 3."
+      "detail": "PLATFORM.md §5 'The module system' gains a Worked example paragraph at line 287 linking 06-modules/reactory-azure/README.md and the template; the azure page links back to ../../PLATFORM.md#5-the-module-system and that anchor resolves against the '## 5. The module system' heading at line 229. 08-contributing/module-doc-template.md names the azure page the canonical sample implementation and links its #9-worked-example--how-this-module-is-built anchor. 06-modules/index.md moves azure to [documented] and the count from 2 to 3; the index is fresh according to the generator check. All five relative links in the page exist."
     },
     {
       "id": "CR-6",
       "area": "Technical accuracy against source",
       "result": "pass",
-      "detail": "Independently verified: IMicrosoftGraph declares exactly 8 methods while graph.ts implements 9; getEmails at graph.ts:105 is undeclared and is called at UserEmails.ts:22 (TS2353/TS2339 attribution is sound). Client and ResponseType are never imported, no global declaration exists, @microsoft/microsoft-graph-client is in neither the module manifest nor the lockfile, and the two Graph packages are absent — so the eight non-catching methods do throw ReferenceError. sendEmail's factory call is inside the try (:217), the catch at :221-223 logs, and return response at :225 resolves to the module-scope Express import at :4. getEmails' factory at :107 precedes its try at :109. Storage is an empty class with commented methods, devstoreaccount1 and AZURE_STORAGE_KEY read at import; package is MIT 1.1.0 vs module 1.0.0; AGENT.md lines 25 and 34 carry the documented drift; core's two direct imports are at ProfileResolver.ts:6 and UserEmails.ts:9; core module priority is 0 as claimed; noImplicitAny is true. No factual claim I checked was wrong."
+      "detail": "Independently re-derived rather than trusting the page or its verifier: IMicrosoftGraph declares exactly eight methods and omits getEmails; graph.ts implements nine; getEmails is undeclared at the annotated object literal (TS2353) and called at UserEmails.ts:22 (TS2339). Client and ResponseType are never imported; @microsoft/microsoft-graph-client and @microsoft/microsoft-graph-types appear in neither package.json nor yarn.lock; all eight non-catching methods call the factory outside a try; sendEmail's factory call is inside the try at :217, the catch at :221-223 only logs, and `return response` at :225 resolves to the Express import at :4. The storage class body is entirely commented out, devstoreaccount1/AZURE_STORAGE_KEY are read at import, and nothing imports the file. services/index.ts and workflows/index.ts both export []. Core's direct imports are at ProfileResolver.ts:6 and UserEmails.ts:9, with getUserDetails at :223/:254, getEmails at :22, and the commented-out sendEmail at EmailService.ts:135. The google comparison is accurate (ten services, populated module fields). No factual claim I checked was wrong."
     },
     {
       "id": "CR-7",
       "area": "Verification actually runs and is meaningful",
       "result": "pass",
-      "detail": "Re-ran myself: node scripts/verify-azure-docs.js --require-source => 34/34 (105 citations resolved, source /Users/wernerw/Projects/reactory/reactory-express-server); verify-reactor-docs.js => 11/11; verify-docs.js => 25/26. The verifier is dependency-free, parses types.d.ts for the method count, asserts getEmails is absent from the interface but present in graph.ts, reproduces sendEmail's control-flow ordering, and fails on source-shape drift rather than trusting the prose. It does not merely re-read the page."
+      "detail": "Re-ran the suite myself. `node scripts/verify-azure-docs.js --require-source` -> 34/34, 105 citations resolved, source /Users/wernerw/Projects/reactory/reactory-express-server. `node scripts/verify-reactor-docs.js` -> 11/11 as invoked in the report. `node scripts/verify-docs.js --require-source` -> 25/26. The verifier is dependency-free and fails on source-shape drift rather than only re-reading prose: it parses types.d.ts for the method count, asserts getEmails is absent from the interface but present in graph.ts, and reproduces sendEmail's control-flow ordering. It is a genuine gate, not a tautology."
     },
     {
       "id": "CR-8",
       "area": "Regression / pre-existing failure claim",
       "result": "pass",
-      "detail": "The single verify-docs.js failure ('generated reference is fresh' for 07-reference/modules/reactory-core.md) is genuinely pre-existing: I checked out origin/master 8ba69be into a throwaway worktree and reproduced 25/26 there, and git diff 8ba69be..HEAD shows no 07-reference change. Leaving the generated-file churn out of this PR is the correct call."
+      "detail": "The single verify-docs.js failure ('generated reference is fresh' for 07-reference/modules/reactory-core.md) is genuinely pre-existing. I created a detached worktree at origin/master 8ba69be and ran the same verifier with REACTORY_SERVER_ROOT set: 25/26 with the identical failure. `git diff origin/master -- 07-reference` is empty on this branch. Leaving the generated-file churn out of this PR is the correct call."
     },
     {
       "id": "CR-9",
       "area": "Documentation hygiene",
       "result": "pass",
-      "detail": "Six-field frontmatter present and valid (status: Partial; verifiedAgainst reactory-express-server@59639fe / reactory-azure@c962956 — both commits confirmed on disk). No TODO/TBD/FIXME, no overlong table rows, code fences balanced (20), all relative links and anchors resolve."
+      "detail": "Six-field frontmatter present (status: Partial; verifiedAgainst reactory-express-server@59639fe / reactory-azure@c962956 — both commits confirmed on disk). Section order matches the template. No TODO/TBD/FIXME placeholders. Code fences balanced. The 105 evidence rows resolve to existing files and in-range lines. The page is long (1005 lines) but the length is demanded by the ticket's eleven areas plus a 105-row evidence index; it is not padding. One content nit remains in the introduction (see NB-2) but it does not affect the acceptance criteria."
     },
     {
       "id": "CR-10",
-      "area": "Minor citation precision (non-blocking)",
-      "result": "pass",
-      "detail": "Three evidence ranges in the reactory-google comparison are loose rather than wrong: 'reactor' is cited as index.ts:33-39 but the reactor block is 35-40 (33-34 are passportProviders/pdfs); TasksService's decorator is cited 13-24 where the decorator starts at 14; the plain definition is cited 197-211 but ends at 209. Each range still contains the cited construct and resolves in-file, so no reader is misled, and the verifier's in-range check cannot detect semantic targeting. Worth tightening when the page is next touched; not a reason to hold the PR."
-    },
-    {
-      "id": "CR-11",
-      "area": "Intro prose (cosmetic)",
-      "result": "pass",
-      "detail": "The introduction says the template's §9 and §10 'appear here as §9, §10 and §11', which reads as three sections from two. It should say they appear as §10 and §11 after the new §9. One-sentence fix, no impact on correctness or acceptance."
-    },
-    {
-      "id": "CR-12",
       "area": "Report accuracy",
       "result": "pass",
-      "detail": "The report's verification results reproduce exactly. Two summary-level counts are loose: it says '18 measured limitations' while §10 has 20 numbered rows (1-9, 9a, 9b, 10-18), and it calls the branch base 8ba69be while the local ref named master is older; origin/master is indeed 8ba69be, so the claim is correct against origin. Neither affects the deliverable."
+      "detail": "The substantive verification results reproduce exactly. Several summary-level figures are loose or stale: the diffstat excludes the two .ai-agent files now present on the branch/PR; the report says §10 has 'eighteen measured limitations' while the table has 20 rows (1-9, 9a, 9b, 10-18); and the reactor '11/11' is the no-flag output — with --require-source it is 11/12 because no reactor checkout is reachable, so 341 citations are unverified. None of these changes the documentation deliverable or the acceptance outcome, but the report should be corrected on the next touch."
     }
   ],
-  "summary": "Approved. The reactory-azure page is the strongest form of documentation this ticket could produce: it states the module is an example-only MIT reference rather than a commercial integration, reconciles the stale registry value with evidence and an exact out-of-repo fix, and then uses the module as a ten-step build walkthrough in which every step points at a real file and line. I re-derived the load-bearing technical claims from the server checkout rather than trusting the page or the agent-authored verifier: 8 declared / 9 implemented interface methods, the getEmails omission and its TS2353/TS2339 consequence, the unimported Client/ResponseType and undeclared Graph packages, sendEmail's caught error plus the truthy Express response, getEmails' factory-before-try ordering, the commented-out storage scaffold, the empty services/workflows arrays, the MIT-vs-commercial split, and the two direct core imports — all accurate. The three verifiers run clean (azure 34/34, reactor 11/11, core 25/26) and the single core failure reproduces on origin/master 8ba69be, so it is not introduced here. The only residue is cosmetic: three loose line ranges in the reactory-google comparison, one confusing sentence about section renumbering, and the unavoidable fact that the registry still says 'commercial' until a server-side ticket changes it."
+  "nonBlocking": [
+    {
+      "id": "NB-1",
+      "area": "Repository hygiene / report scope",
+      "detail": "The branch and PR #6 include .ai-agent/report.json and .ai-agent/review.json (245 lines). These are pipeline artefacts, not documentation. The report's claim 'Exactly the 6 intended files, 1813 insertions... No unrelated path' is therefore inaccurate against the actual PR (8 files, 2058 insertions). Either add .ai-agent/ to .gitignore and drop it from the PR, or state the artefact files explicitly in the report so the scope claim is true."
+    },
+    {
+      "id": "NB-2",
+      "area": "Intro prose",
+      "detail": "The introduction says the template's §9 and §10 'appear here as §9, §10 and §11'. The new §9 is the worked example; the template's §9 and §10 actually appear as §10 and §11. One-sentence fix: '...so the template's §9 and §10 appear here as §10 and §11, after the new §9.'"
+    },
+    {
+      "id": "NB-3",
+      "area": "Citation precision",
+      "detail": "Three ranges contain the cited construct but overshoot or start late: reactory-google/index.ts:33-39 for the reactor block (actual 36-41), TasksService.ts:13-24 for the decorator (actual 13-25), and TasksService.ts:197-211 for the plain definition (actual 197-209). Evidence row 98 calls EmailService.ts:226-236 a 'canonical mock service definition' — it is the real service definition, not a mock. Worth tightening when the page is next touched; readers are not misled and the in-range verifier cannot detect semantic targeting."
+    },
+    {
+      "id": "NB-4",
+      "area": "Reactor verifier caveat",
+      "detail": "The new template instructs readers to run all three verifiers with --require-source. In this environment verify-reactor-docs.js --require-source exits 1 (11/12) because no reactory-reactor checkout is reachable, leaving 341 citations unverified. This is an environment limitation, not a regression from this branch, but the report and PR body should say so rather than implying the reactor citation check ran."
+    },
+    {
+      "id": "NB-5",
+      "area": "Source licence follow-up",
+      "detail": "The three `commercial` registry values and the shop URL remain in reactory-express-server. Until the claimed follow-up ticket lands, 06-modules/index.md will keep showing reactory-azure as commercial. Track that ticket to closure; the docs page correctly says the generated column is not authoritative for this module."
+    }
+  ],
+  "verification": [
+    {
+      "command": "git status --short; git log --oneline -5; git diff origin/master --stat",
+      "result": "Clean worktree, branch 7c6b2ba four commits ahead of origin/master 8ba69be; 8-file diff (2 of them .ai-agent artefacts)."
+    },
+    {
+      "command": "node scripts/verify-azure-docs.js --require-source",
+      "result": "34/34 checks passed; 105 evidence citations resolved; source /Users/wernerw/Projects/reactory/reactory-express-server."
+    },
+    {
+      "command": "node scripts/verify-reactor-docs.js",
+      "result": "11/11 checks passed (as invoked in the report). With --require-source: 11/12, sole failure 'no reactory-reactor checkout found'."
+    },
+    {
+      "command": "node scripts/verify-docs.js --require-source",
+      "result": "25/26 checks passed; sole failure is the pre-existing stale 07-reference/modules/reactory-core.md."
+    },
+    {
+      "command": "git worktree add --detach /tmp/master-check origin/master; REACTORY_SERVER_ROOT=... node scripts/verify-docs.js --require-source",
+      "result": "25/26 with the identical generated-reference failure on origin/master 8ba69be — confirms the failure is pre-existing."
+    },
+    {
+      "command": "cat -n of module source (index.ts, types.d.ts, services/graph.ts, services/index.ts, workflows/index.ts, storage/index.ts, package.json, AGENT.md, README.md, available.json/enabled-reactory.json/installed.json)",
+      "result": "Every load-bearing claim in the page matches source: FQN, MIT, 8 declared/9 implemented methods, getEmails omission, sendEmail control flow, empty service/workflow arrays, storage scaffold, registry `commercial` values."
+    },
+    {
+      "command": "gh pr view 6 --repo reactorynet/reactory-docs --json ...",
+      "result": "OPEN, MERGEABLE, BLOCKED on REVIEW_REQUIRED; head 7c6b2ba; files include the six docs/code files plus .ai-agent/report.json and .ai-agent/review.json."
+    }
+  ],
+  "summary": "Approved. The deliverable is the strongest form this ticket could take inside a docs-only repository: a 1005-line page that states plainly that reactory-azure is an example-only MIT reference rather than a commercial integration, reconciles the stale `commercial` registry value with file:line evidence and the exact out-of-repo fix, and then uses the module as a ten-step build walkthrough in which every step points at a real file and line. I re-derived the load-bearing technical claims from the server checkout rather than trusting the page or the agent-authored verifier: FQN and module fields, the eight-declared/nine-implemented interface mismatch and its TS2353/TS2339 consequence, the unimported Client/ResponseType and undeclared Graph packages, sendEmail's caught error plus the truthy Express return, getEmails' factory-before-try ordering, the commented-out storage scaffold and unused AnonymousCredential, the empty services/workflows arrays, the three `commercial` registry values, and core's two direct imports. All verified. The azure verifier passes 34/34 with 105 citations resolving, the reactor verifier passes 11/11 as invoked, and the single docs failure reproduces identically on origin/master, so it is not introduced here. All three acceptance criteria are met at documentation level; the only remaining item is the server-side licence correction, which cannot be made in this worktree and is correctly routed to a follow-up. Residual issues are non-blocking: the report's diffstat omits the two committed .ai-agent artefacts (so its '6 files' claim is stale), the introduction miscounts the renumbered sections, a few comparison citations are loose, and the reactor verifier's citation check is skipped when invoked as reported."
 }
