@@ -296,7 +296,7 @@ token. The table below lists all nine implemented methods and marks the undeclar
 | `getProfileImage` | `GET /me/photos/{size}/$value` | v1.0 | Returns a `data:image/jpeg;base64,...` string; logs and returns `null` on failure | `src/modules/reactory-azure/services/graph.ts:28-63` |
 | `getUserDetails` | `GET /me?$select=mail,givenName,surname` | v1.0 | Optionally fetches the avatar and attaches it as `avatar` | `src/modules/reactory-azure/services/graph.ts:64-91` |
 | `getEvents` | `GET /me/events` | v1.0 | Calendar events; no caller in either repository | `src/modules/reactory-azure/services/graph.ts:93-103` |
-| `getEmails` | `GET /me/messages` | v1.0 | Supports `filter.search`; swallows errors and returns `[]`. **Not declared on `IMicrosoftGraph`** — see §10 | `src/modules/reactory-azure/services/graph.ts:105-133` |
+| `getEmails` | `GET /me/messages` | v1.0 | Supports `filter.search`; its `try` swallows request errors and returns `[]`, but the client factory at `:107` is *before* the `try`, so today the missing `Client` escapes as `ReferenceError`. **Not declared on `IMicrosoftGraph`** — see §10 | `src/modules/reactory-azure/services/graph.ts:105-133` |
 | `getTasks` | `GET /me/outlook/tasks` | beta | Accepts a `filter` argument but ignores it | `src/modules/reactory-azure/services/graph.ts:135-143` |
 | `getTask` | `GET /me/outlook/tasks/{id}` | beta | Single task; no caller | `src/modules/reactory-azure/services/graph.ts:145-153` |
 | `createTask` | `POST /me/outlook/tasks` | beta | Builds `startDateTime`/`dueDateTime`; no caller | `src/modules/reactory-azure/services/graph.ts:167-191` |
@@ -483,8 +483,10 @@ on identifiers that are never imported.
 - **Credential storage:** none in this module; delegated tokens live on the user record.
 - **Rotation/refresh:** handled outside the module, and only on the profile path.
 - **Observability:** hardcoded Graph debug logging; no metrics, retries or rate limiting.
-- **Failure behaviour:** `getEmails` returns `[]`; `sendEmail` catches the error, logs it, and
-  returns the Express `response` export — a failed send is indistinguishable from a successful one.
+- **Failure behaviour:** `getEmails` returns `[]` for request errors once a client exists, but today
+  the undefined `Client` is thrown at the factory before its `try`; `sendEmail` catches the same
+  error, logs it, and returns the Express `response` export — a failed send is indistinguishable from
+  a successful one.
 
 ---
 
@@ -803,7 +805,7 @@ Read both pages together: Google is the destination, Azure is the smallest hones
 | 9 | `sendEmail` cannot report a failed send | Graph call is inside `try` at `:217`; `Client is not defined` is caught at `:221-223` and logged; `return response` at `:225` returns the Express export imported at `:4` | `src/modules/reactory-azure/services/graph.ts:4`, `:216-225` |
 | 9a | `IMicrosoftGraph` omits `getEmails` | interface declares 8 methods; implementation has 9 | `src/modules/reactory-azure/types.d.ts:13-30`, `src/modules/reactory-azure/services/graph.ts:105` |
 | 9b | The omission is a compile error in a `noImplicitAny` project, not a style issue | `TS2353` on the annotated object literal; `TS2339` at core's call site | `src/modules/reactory-azure/services/graph.ts:27`, `src/modules/reactory-core/resolvers/Emails/UserEmails.ts:22` |
-| 10 | `getEmails` hides failures as empty results | returns `[]` after catch | `src/modules/reactory-azure/services/graph.ts:108`, `:128-132` |
+| 10 | `getEmails` hides request failures as empty results, but the missing `Client` escapes first | catch returns `[]`; the factory call at `:107` precedes the `try` at `:109` | `src/modules/reactory-azure/services/graph.ts:107-109`, `:128-132` |
 | 11 | `getTasks` accepts a filter and ignores it | signature at `:135`, no filter use in `:136-140` | `src/modules/reactory-azure/services/graph.ts:135-143` |
 | 12 | Graph debug logging is hardcoded on | `debugLogging: true` | `src/modules/reactory-azure/services/graph.ts:16` |
 | 13 | Core bypasses the module contract with direct imports | 2 direct imports in core | `src/modules/reactory-core/resolvers/User/ProfileResolver.ts:6`, `src/modules/reactory-core/resolvers/Emails/UserEmails.ts:9` |
@@ -934,7 +936,8 @@ Every claim in this page resolves to a file and a line in the
 | 46 | Events method | `src/modules/reactory-azure/services/graph.ts:93-103` |
 | 47 | Emails method | `src/modules/reactory-azure/services/graph.ts:105-133` |
 | 48 | Email search branch | `src/modules/reactory-azure/services/graph.ts:111-117` |
-| 49 | Email errors are swallowed | `src/modules/reactory-azure/services/graph.ts:128-132` |
+| 49 | Email request errors are swallowed by the catch | `src/modules/reactory-azure/services/graph.ts:128-132` |
+| 49a | The email client factory is called before the `try`, so today's `Client is not defined` escapes | `src/modules/reactory-azure/services/graph.ts:107-109` |
 | 50 | Tasks method ignores its filter | `src/modules/reactory-azure/services/graph.ts:135-143` |
 | 51 | Single-task method | `src/modules/reactory-azure/services/graph.ts:145-153` |
 | 52 | Delete-task method | `src/modules/reactory-azure/services/graph.ts:155-165` |
