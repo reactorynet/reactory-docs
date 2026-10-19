@@ -9,11 +9,11 @@
 Module pages follow the 10-section template in the documentation plan. A module with no page
 is listed here as *not yet documented* rather than omitted, so the gap stays visible.
 
-Registry entries: **17**. Documented: **2**.
+Registry entries: **17**. Documented: **3**.
 
 | Module | FQN | Licence | Page |
 |---|---|---|---|
-| `reactory-azure` | `core.ReactoryAzure@1.0.0` | commercial | *not yet documented* |
+| `reactory-azure` | `core.ReactoryAzure@1.0.0` | commercial | [documented](./reactory-azure/README.md) |
 | `reactory-classroom` | `classroom.ReactoryClassroom@1.0.0` | commercial | *not yet documented* |
 | `reactory-communicator` | `reactory.CommunicatorModule@1.0.0` | commercial | *not yet documented* |
 | `reactory-core` | `core.ReactoryServer@1.0.0` | Apache-2.0 | [documented](./reactory-core/README.md) |
