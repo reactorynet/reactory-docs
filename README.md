@@ -87,6 +87,8 @@ Find a below a list for getting started with Reactory.
 
 * [Installing Reactory](install.md) - Provides links to installation instructions to different modules
 * [Developing](development/index.md) - Index page for how tos and links to development docs and tutorials
+* [Module Reference](06-modules/index.md) - Per-module documentation: contract, data model, API, services, operations, limitations
+* [Agents](04-agents/overview.md) - The agentic layer: providers, personas, tools, skills, MCP and agents in workflows
 * [Products](roadmap/products.md) - Overview of all the products that is intended for the system
 * [Roadmap](roadmap/overview.md) - The planned roadmap for 2023 / 2024
 * [Funding](funding/overview.md) - Interested in being a funder?
