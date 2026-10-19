@@ -12,6 +12,14 @@ This is a **pure documentation project** -- there is no application code, no bui
 reactory-docs/
   README.md                          # Main entry point and platform overview
   install.md                         # Installation guide (links to server/client repos)
+  06-modules/                        # Module documentation, 10-section template
+    index.md                         # GENERATED registry table (all modules)
+    <module>/README.md               # Narrative page for one module
+  07-reference/                      # GENERATED reference; never hand-edited
+    modules/<module>.md              # Extension points, GraphQL, services, forms, workflows
+  scripts/                           # Dependency-free Node tooling (see below)
+    generate-core-module-reference.js
+    verify-docs.js
   LICENSE                            # MIT license
   branding/                          # Brand assets (logos, architecture diagrams, PNGs)
   img/                               # General images (banner, logos -- lowercase filenames)
@@ -60,6 +68,8 @@ reactory-docs/
 
 | Section | Status |
 |---|---|
+| `06-modules/` | Started — `reactory-core` complete, 19 modules pending |
+| `07-reference/` | Generated — currently `modules/reactory-core.md` |
 | README.md, install.md | Complete |
 | development/index.md, coreconcepts.md | Complete |
 | development/forms/ | Complete (overview + widgets catalog) |
@@ -76,7 +86,12 @@ reactory-docs/
 
 ### Markdown Format
 - Use standard GitHub-flavored Markdown
-- No MDX, no frontmatter/YAML metadata, no templating
+- No MDX and no templating
+- **Exception — module pages.** Pages under `06-modules/` carry a YAML frontmatter
+  header (`title`, `status`, `owner`, `verified`, `verifiedAgainst`, `audience`) as
+  required by section 3 of the documentation plan. `status` must be one of
+  `Implemented`, `Partial`, `WIP`, `Roadmap`, `Deprecated`. Other pages stay
+  frontmatter-free.
 - Start pages with a banner image: `![Build Anything Fast](/branding/reactory-logo.png)`
 - Use relative `.md` file paths for cross-references (e.g., `[Core Concepts](coreconcepts.md)`)
 - Use relative paths for image references (e.g., `../branding/reactory-logo.png`)
@@ -104,6 +119,35 @@ This documentation covers:
 - **Reactory Core** (`reactory-core`) -- Shared TypeScript types and utilities
 - **Reactory Data** (`reactory-data`) -- Assets, plugins, themes, i18n, workflows
 
-## No Build or Test Commands
+## Generated Reference and Verification
 
-This is a Markdown-only repository. There are no build, test, lint, or deploy commands. Contributions are verified by reviewing rendered Markdown and checking that relative links resolve correctly.
+This is a Markdown-only repository: there is no `package.json`, no bundler and no static
+site generator. `scripts/` holds two dependency-free Node scripts, and they are the only
+commands.
+
+`06-modules/index.md` and everything under `07-reference/` are **generated** and must not be
+edited by hand. They are produced by reading the `reactory-express-server` source, so the
+script needs a checkout of that repository. Locate it with `REACTORY_SERVER_ROOT`, or let the
+script find a sibling directory:
+
+```bash
+export REACTORY_SERVER_ROOT=../reactory-express-server
+
+node scripts/generate-core-module-reference.js           # regenerate and write
+node scripts/generate-core-module-reference.js --check   # exit 1 if stale
+```
+
+Commit the regenerated files with the change that caused them. A stale table is a review
+finding, not a task for the reader.
+
+`scripts/verify-docs.js` is the guard. It always checks the template sections, the
+frontmatter, the mandatory limitation statements, the evidence index and that links inside
+`06-modules/`/`07-reference/` resolve. When the server checkout is reachable it additionally
+checks that the generated files are fresh and that the counts stated in prose match the
+source; pass `--require-source` to make a missing checkout an error.
+
+```bash
+node scripts/verify-docs.js --require-source
+```
+
+There is no other build, lint or deploy step. Everything else is Markdown.
