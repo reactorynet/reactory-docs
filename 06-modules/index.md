@@ -9,7 +9,7 @@
 Module pages follow the 10-section template in the documentation plan. A module with no page
 is listed here as *not yet documented* rather than omitted, so the gap stays visible.
 
-Registry entries: **17**. Documented: **3**.
+Registry entries: **17**. Documented: **4**.
 
 | Module | FQN | Licence | Page |
 |---|---|---|---|
@@ -23,7 +23,7 @@ Registry entries: **17**. Documented: **3**.
 | `reactory-payment` | `payment.ReactoryPayment@1.0.0` | commercial | *not yet documented* |
 | `reactory-pdf-manager` | `pdf-manager.ReactoryPdfManager@1.0.0` | Apache-2.0 | *not yet documented* |
 | `reactory-product` | `product.ReactoryProduct@1.0.0` | commercial | *not yet documented* |
-| `reactory-queue` | `reactory.Queue@1.0.0` | private | *not yet documented* |
+| `reactory-queue` | `reactory.Queue@1.0.0` | private | [documented](./reactory-queue/README.md) |
 | `reactory-reactor` | `reactory.Reactor@1.0.0` | commercial | [documented](./reactory-reactor/README.md) |
 | `reactory-slack` | `reactory.SlackModule@1.0.0` | commercial | *not yet documented* |
 | `reactory-socialeyes` | `reactory.SocialEyes@1.0.0` | commercial | *not yet documented* |
