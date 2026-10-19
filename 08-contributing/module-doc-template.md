@@ -94,6 +94,7 @@ Each documented module has a verifier in `scripts/`:
 node scripts/verify-docs.js --require-source          # reactory-core
 node scripts/verify-reactor-docs.js --require-source  # reactory-reactor
 node scripts/verify-azure-docs.js --require-source    # reactory-azure
+node scripts/verify-queue-docs.js --require-source    # reactory-queue
 ```
 
 The verifiers check the frontmatter, the section order, the mandatory limitation statements, the
