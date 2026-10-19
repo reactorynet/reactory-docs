@@ -284,6 +284,13 @@ passport providers, CLI commands, workflow steps, gRPC services and services all
 > `available.json`. `AGENT.md` in the server repo also lists ~16 modules that are not present. Use
 > **14** in any external material until the others land.
 
+**Worked example.** [`reactory-azure`](06-modules/reactory-azure/README.md) is the canonical
+walkthrough of how a vendor API becomes a module: registry entry → module object → services → data
+model → GraphQL → workflows → forms/UI → storage → runtime registration. It is deliberately small
+and documents the points where it stops. Module authors should read it alongside the
+[module documentation template](08-contributing/module-doc-template.md), which uses it as the sample
+implementation.
+
 ### Service registry
 
 Services are declared either by a static `reactory` property or a `@service({...})` decorator, and

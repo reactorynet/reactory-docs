@@ -68,7 +68,7 @@ reactory-docs/
 
 | Section | Status |
 |---|---|
-| `06-modules/` | Started — `reactory-core` complete, 19 modules pending |
+| `06-modules/` | 3 of 17 registry modules documented — `reactory-core`, `reactory-reactor`, `reactory-azure` |
 | `07-reference/` | Generated — currently `modules/reactory-core.md` |
 | README.md, install.md | Complete |
 | development/index.md, coreconcepts.md | Complete |
@@ -140,14 +140,17 @@ node scripts/generate-core-module-reference.js --check   # exit 1 if stale
 Commit the regenerated files with the change that caused them. A stale table is a review
 finding, not a task for the reader.
 
-`scripts/verify-docs.js` is the guard. It always checks the template sections, the
-frontmatter, the mandatory limitation statements, the evidence index and that links inside
+`scripts/verify-docs.js` is the guard for `reactory-core`. It always checks the template sections,
+the frontmatter, the mandatory limitation statements, the evidence index and that links inside
 `06-modules/`/`07-reference/` resolve. When the server checkout is reachable it additionally
 checks that the generated files are fresh and that the counts stated in prose match the
-source; pass `--require-source` to make a missing checkout an error.
+source; pass `--require-source` to make a missing checkout an error. The Reactor and Azure pages
+have their own verifiers (`scripts/verify-reactor-docs.js`, `scripts/verify-azure-docs.js`).
 
 ```bash
 node scripts/verify-docs.js --require-source
+node scripts/verify-reactor-docs.js --require-source
+node scripts/verify-azure-docs.js --require-source
 ```
 
 There is no other build, lint or deploy step. Everything else is Markdown.
