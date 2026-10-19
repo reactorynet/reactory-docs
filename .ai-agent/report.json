@@ -1,7 +1,7 @@
 {
-  "summary": "Verified the prior run's reactory-azure documentation against the ticket and the live source, and closed the remaining gaps. The deliverable is complete: a 1,005-line page at 06-modules/reactory-azure/README.md with all eleven required areas, a licence reconciliation (MIT / example-only authoritative; 'commercial' in three registry files recorded as the defect), a ten-step worked example mapped to real files and lines, and a 105-citation evidence index that resolves. Cross-links exist from PLATFORM.md §5 (the module-system architecture page), 08-contributing/module-doc-template.md (which names the page the canonical sample implementation), and the regenerated module index. This run independently re-read the module source and confirmed every load-bearing claim (FQN, licence, method counts, Graph defects, sendEmail control flow, storage scaffold, empty services/workflows, package dependencies). All azure checks pass 34/34 and reactor 11/11; the single docs 25/26 failure is the pre-existing stale 07-reference/modules/reactory-core.md on master, byte-identical here. Two closeout actions were taken: the PR body was completed with the change table and verification evidence, and the one item the docs-only branch could not fix at source (the server registry licence) was routed as follow-up ticket REACTORY-302016408/20261019/923623068.",
+  "summary": "Verification-only run. The ticket deliverable was already implemented and pushed as PR #6, so this run read the existing change, re-verified it against every scope item and acceptance criterion, and refreshed the completion report. No content edits were required: the page at 06-modules/reactory-azure/README.md is 1,005 lines with all eleven required areas, an explicit licence reconciliation (MIT / example-only authoritative; 'commercial' in three server registry files recorded as the defect and routed), a ten-step worked example mapped to real files and lines, and a 105-citation evidence index. Cross-links exist from PLATFORM.md §5 (module-system architecture), 08-contributing/module-doc-template.md (canonical sample implementation) and the regenerated module index. Fresh verification: verify-azure-docs.js 34/34 including live source checks; verify-reactor-docs.js 11/11; verify-docs.js 25/26 with the sole failure confirmed pre-existing and byte-identical to origin/master; git HEAD equals the pushed branch head; PR #6 is OPEN, MERGEABLE, BLOCKED only on REVIEW_REQUIRED, GitGuardian SUCCESS. One source-side item cannot be fixed in this docs worktree (registry licence value) and is tracked by open follow-up ticket REACTORY-302016408/20261019/923623068.",
   "status": "completed",
-  "runMode": "verification-and-closeout",
+  "runMode": "verification-and-report",
   "ticket": {
     "reference": "REACTORY-302016408/20261018/2254215113",
     "request": "[Docs] Module documentation: reactory-azure (reference example)",
@@ -15,140 +15,226 @@
       "worktree": "/Users/wernerw/Projects/reactory/reactory-worktrees/ai-reactory-302016408-20261018-2254215113",
       "branch": "chore/REACTORY-302016408-20261018-2254215113",
       "base": "origin/master @ 8ba69be",
+      "head": "88a5497",
+      "remoteHead": "88a5497",
+      "inSyncWithRemote": true,
       "pushed": true,
       "pullRequest": {
         "number": 6,
         "url": "https://github.com/reactorynet/reactory-docs/pull/6",
         "state": "OPEN",
+        "isDraft": false,
         "mergeable": "MERGEABLE",
         "mergeStateStatus": "BLOCKED",
         "blockReason": "REVIEW_REQUIRED",
-        "checks": "GitGuardian Security Checks: SUCCESS",
-        "reviews": "none submitted on GitHub; internal QualityQuinn review approved at d58c4d6"
+        "reviewDecision": "REVIEW_REQUIRED",
+        "checks": "GitGuardian Security Checks: SUCCESS (completed 2026-10-19T06:23:32Z)",
+        "reviews": "none submitted on GitHub; internal QualityQuinn review approved at 7c6b2ba/88a5497"
       },
-      "commits": [
-        "2b94479 docs(azure): document reactory-azure as the reference module example",
-        "20a8ebf docs(azure): correct interface method count and sendEmail failure mode",
-        "d58c4d6 docs(azure): distinguish getEmails catch from the missing-client failure",
-        "8a72b08 AI engineering run: REACTORY-302016408/20261018/2254215113"
+      "changedFiles": [
+        "06-modules/reactory-azure/README.md (+1005)",
+        "08-contributing/module-doc-template.md (+115)",
+        "PLATFORM.md (+7)",
+        "06-modules/index.md (+2/-2)",
+        "AGENT.md (+7/-4)",
+        "scripts/verify-azure-docs.js (+677)",
+        ".ai-agent/report.json (refreshed this run)",
+        ".ai-agent/review.json (from prior review run)"
       ],
-      "diffstat": "6 files changed, 1813 insertions(+), 6 deletions(-) against origin/master; no 07-reference or unrelated path touched"
+      "diffstat": "git diff --stat origin/master...HEAD: 8 files changed, 2105 insertions(+), 6 deletions(-). Human-readable change is 6 files / 1813 insertions; the remaining two are .ai-agent artefacts. No path under 07-reference is touched."
     }
   ],
-  "deliverables": [
+  "scope_coverage": [
     {
-      "path": "06-modules/reactory-azure/README.md",
-      "lines": 1005,
-      "what": "Eleven-section page: §1 purpose/status with the full licence reconciliation; §2 module contract (core.ReactoryAzure@1.0.0) and every extension point including the empty ones; §3 data model (no local model; blob/file-share/queue/table reality); §4 GraphQL (zero, with composition points); §5 services (two files, zero registrations, 8 declared / 9 implemented); §6 UI (zero); §7 workflows (one inert file, zero definitions); §8 operations (delegated tokens, no connection strings, no tenant configuration, hardcoded debug logging); §9 the ten-step worked example plus reactory-google comparison and copy checklist; §10 eighteen measured limitations with roadmap; §11 a 105-citation evidence index."
+      "ticketItem": "1. Purpose and status — reference/example, not supported commercial; reconcile licence",
+      "where": "§1 Purpose & status (line 40), incl. 'Licence reconciliation' subsection",
+      "verified": true,
+      "detail": "States 'reference example, not a supported commercial integration'; licence table resolves MIT from package.json:17-21 and AGENT.md:12, records commercial in available.json:28 / enabled-reactory.json:28 / installed.json:28 plus the shop URL at available.json:30 as the defect, and specifies the exact fix."
     },
     {
-      "path": "08-contributing/module-doc-template.md",
-      "lines": 115,
-      "what": "New module documentation template: frontmatter contract, ten mandatory sections, the optional worked-example section and its numbering shift, evidence rules, verifier commands and generated-page rules. Names reactory-azure as the canonical sample implementation and links its §9 anchor."
+      "ticketItem": "2. Module contract: FQN core.ReactoryAzure@1.0.0 and contributed extension points",
+      "where": "§2 Module contract (line 117)",
+      "verified": true,
+      "detail": "Full 16-field module-object table with per-line evidence, plus an 'effective extension points' table showing every contribution (all zero/absent) and a load-order / identity-drift note (package 1.1.0 vs module 1.0.0)."
     },
     {
-      "path": "PLATFORM.md",
-      "lines": 7,
-      "what": "§5 'The module system' (heading at line 229) gains a Worked example paragraph at line 287 linking 06-modules/reactory-azure/README.md and the documentation template. This satisfies the architecture-page cross-link acceptance criterion."
+      "ticketItem": "3. Data model: blob/queue/table storage abstractions if present",
+      "where": "§3 Data model (line 184)",
+      "verified": true,
+      "detail": "Explicitly records zero local model, then a blob/file-share/queue/table coverage table: blob is a scaffolded empty class, file share SDK imported but unused, queue and table absent."
     },
     {
-      "path": "06-modules/index.md",
-      "lines": 4,
-      "what": "Regenerated index: azure moves from 'not yet documented' to documented and the documented count moves from 2 to 3. The licence column still shows 'commercial' because the generator reads available.json; the page states explicitly that this column is not authoritative for this module until the server metadata is fixed."
+      "ticketItem": "4. GraphQL API",
+      "where": "§4 GraphQL API (line 220)",
+      "verified": true,
+      "detail": "Zero SDL/types/resolvers/subscriptions/directives; names the aggregation points in src/models/graphql/types/index.ts:6-16 and resolvers/index.ts:19, and contrasts with reactory-google."
     },
     {
-      "path": "AGENT.md",
-      "lines": 11,
-      "what": "Docs-programme status corrected to 3 of 17 modules documented; documents the three per-module verifiers instead of implying a single guard."
+      "ticketItem": "5. Services: what each service wraps (blob, file share, identity, etc.)",
+      "where": "§5 Services (line 267)",
+      "verified": true,
+      "detail": "Two service files, zero registered services. Per-method table for all nine Graph operations (endpoint, API version, notes, evidence); explicitly states there is no Azure AD/Entra identity service; explains why MSGraph is not a service and shows the illustrative definition that is missing."
     },
     {
-      "path": "scripts/verify-azure-docs.js",
-      "lines": 677,
-      "what": "Dependency-free 34-check verifier: filename and frontmatter, eleven ordered sections and no placeholders, mandatory status/licence/behaviour claims, cross-links to PLATFORM.md and the template, index freshness, 105 evidence citations resolving to real files and in-range lines, and source checks for file counts, module-object fields, package licence, empty services/workflows, unimported Graph identifiers, the storage scaffold, core's direct imports, the eight-method interface, the getEmails omission and the real sendEmail control flow."
+      "ticketItem": "6. UI surface",
+      "where": "§6 UI surface (line 352)",
+      "verified": true,
+      "detail": "Zero forms, client plugins, translations, routes, middleware and menus, with the aggregation point (FormService) and the consequence for PWA demonstration."
+    },
+    {
+      "ticketItem": "7. Workflows",
+      "where": "§7 Workflows (line 378)",
+      "verified": true,
+      "detail": "One file exporting [] — zero definitions, zero YAML, zero contributed step types; distinguishes a file count from a capability count."
+    },
+    {
+      "ticketItem": "8. Operations: connection strings, credential handling, per-tenant configuration",
+      "where": "§8 Operations (line 411)",
+      "verified": true,
+      "detail": "Delegated-token handling table, storage credential table (AZURE_STORAGE_KEY only; hardcoded devstoreaccount1; no connection string/SAS/per-tenant account), package-dependency gaps, and an operational summary covering rotation, observability and failure behaviour."
+    },
+    {
+      "ticketItem": "9. THE EXAMPLE SECTION — step-by-step build walkthrough mapped to actual files; canonical reference from module-doc-template.md",
+      "where": "§9 Worked example (line 493), linked from 08-contributing/module-doc-template.md lines 9-13 and 73-77",
+      "verified": true,
+      "detail": "Ten steps: registry → module object → vendor wrapper → data model → GraphQL → workflows → forms/UI → storage → runtime registration → verification. Each step names real files and lines; adds a reactory-google comparison and a copy checklist. The template names this page the canonical sample implementation and links the §9 anchor."
+    },
+    {
+      "ticketItem": "10. Limitations and roadmap",
+      "where": "§10 Limitations & roadmap (line 791)",
+      "verified": true,
+      "detail": "18 measured limitations (1-18 plus 9a/9b) each with a measured value and file:line evidence, including the architectural direct-import limitation and the sendEmail/interface defects; roadmap is framed as candidates rather than unsupported commitments."
+    },
+    {
+      "ticketItem": "11. Evidence index",
+      "where": "§11 Evidence index (line 871)",
+      "verified": true,
+      "detail": "105 numbered file:line citations across identity/licence, module contract, services, types/storage/workflows and consumers. Verifier resolved all 105 to existing files with in-range lines."
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "criterion": "Licence/status contradiction resolved",
+      "result": "Met at the documentation layer; source correction tracked separately.",
+      "detail": "The page declares MIT + example-only as authoritative from two first-party sources, records the three contradictory registry values and the shop URL as the defect, and gives the exact one-word-per-file remediation. The server registry files are outside this docs worktree; correcting them here would be an unreviewed cross-repo edit. Follow-up ticket REACTORY-302016408/20261019/923623068 exists and is OPEN with matching acceptance criteria. The generated 06-modules/index.md still shows 'commercial' by design of its generator, and the page explicitly warns that the column is not authoritative for this module."
+    },
+    {
+      "criterion": "Example walkthrough maps every step to a real file",
+      "result": "Met.",
+      "detail": "§9's ten steps each cite concrete paths and line ranges. verify-azure-docs.js resolves all 105 citations (which include every §9 claim's source) against the live server checkout with exit 0; this run additionally re-read index.ts, services/index.ts, workflows/index.ts, types.d.ts, graph.ts and the three registry files directly."
+    },
+    {
+      "criterion": "Page cross-linked from the module-system architecture page as the worked example",
+      "result": "Met.",
+      "detail": "PLATFORM.md:229 is '## 5. The module system'; the 'Worked example.' paragraph at line 287 links 06-modules/reactory-azure/README.md and the template and names it the canonical walkthrough. The page links back to ../../PLATFORM.md#5-the-module-system, and the template links the page and its §9 anchor."
     }
   ],
   "verification": [
     {
       "command": "node scripts/verify-azure-docs.js",
-      "result": "34/34 checks passed; 105 evidence citations resolved and in range; source checkout /Users/wernerw/Projects/reactory/reactory-express-server",
-      "exitCode": 0
+      "result": "34/34 checks passed, exit 0. Includes section order, machine-readable header, 15 mandatory claims, cross-links, 105 resolving citations, link resolution, source file counts (6 TS / 2 services / 1 storage / 1 workflow / 0 GraphQL / 0 YAML / 0 tests), 384 TS lines, 61 markdown lines, empty services/workflows arrays, 16 module-object fields, package manifest (MIT, 1.1.0, no Graph client), registry values, Graph defects, storage scaffold, core direct imports, 8-method interface with getEmails omitted, and the real sendEmail control flow.",
+      "source": "/Users/wernerw/Projects/reactory/reactory-express-server"
     },
     {
       "command": "node scripts/verify-reactor-docs.js",
-      "result": "11/11 checks passed — no regression from the shared template/index edits",
-      "exitCode": 0
+      "result": "11/11 checks passed, exit 0 — no regression from the shared template/index/AGENT edits. NOTE emitted that the reactory-reactor checkout was not found by this runner, so its 341 citations were not re-resolved; the azure verifier did have a live source checkout.",
+      "source": "/Users/wernerw/Projects/reactory/reactory-express-server"
     },
     {
       "command": "node scripts/verify-docs.js",
-      "result": "25/26 checks passed. Sole failure: 'generated reference is fresh — differs from a fresh generation' for 07-reference/modules/reactory-core.md. Confirmed pre-existing and unrelated: the file is byte-identical to origin/master (diff against `git show origin/master:07-reference/modules/reactory-core.md` is empty) and the branch does not touch 07-reference.",
-      "exitCode": 0
+      "result": "25/26 checks passed, exit 0. Sole failure: 'generated reference is fresh' for 07-reference/modules/reactory-core.md. Confirmed pre-existing and unrelated: git diff origin/master...HEAD -- 07-reference/ is empty and the local file's SHA-256 equals `git show origin/master:07-reference/modules/reactory-core.md` (2837d779...).",
+      "source": "/Users/wernerw/Projects/reactory/reactory-express-server"
     },
     {
-      "command": "git diff origin/master --stat",
-      "result": "Exactly the 6 intended files, 1813 insertions, 6 deletions. No generated reference, no unrelated path."
+      "command": "git rev-parse HEAD / origin/chore/...",
+      "result": "Both 88a5497bec12445632f46462febf9cdc8d79cd6e — local branch matches the branch that backs PR #6; only untracked file was .ai-agent/pr-body.md (report artefact, not part of the docs change)."
     },
     {
-      "command": "git diff HEAD origin/chore/REACTORY-302016408-20261018-2254215113 --stat",
-      "result": "Empty — local branch matches the pushed branch that backs PR #6."
+      "command": "gh pr view 6",
+      "result": "OPEN, mergeable MERGEABLE, mergeStateStatus BLOCKED (REVIEW_REQUIRED), GitGuardian SUCCESS, six commits from 2b94479 to 88a5497."
+    },
+    {
+      "command": "getSupportTicket REACTORY-302016408/20261019/923623068",
+      "result": "Exists, status open, priority low, type bug, assigned, with the registry-file fix and its acceptance criteria recorded."
     }
   ],
   "independent_source_checks": [
-    "src/modules/available.json:26 — fqn is core.ReactoryAzure@1.0.0 (matches the page and ticket).",
-    "src/modules/available.json:28, src/modules/enabled-reactory.json:28, src/modules/installed.json:28 — all three say \"license\": \"commercial\"; available.json:30 carries shop https://reactory.net/shop/modules/reactory-azure. This is the documented defect.",
-    "src/modules/reactory-azure/package.json:17-21 — licenses[0].license is MIT; :3 version 1.1.0; :29-33 declares only @azure/msal-browser, @azure/storage-blob and @azure/storage-file-share (no Graph client).",
-    "src/modules/reactory-azure/index.ts:8-30 — module object exactly as tabulated: :9 id, :10 nameSpace core, :11 version 1.0.0, :12 name ReactoryAzure, :13 dependency core.ReactoryServer@1.0.0, :14 priority 0, :15-18 empty graphDefinitions, :19 models [], :20 workflows spread, :21 forms [], :22 services spread, :23 translations [], :24 clientPlugins [], :25 cli [], :26 description, :27 grpc null, :28 passportProviders [], :29 pdfs [].",
-    "src/modules/reactory-azure/services/index.ts:3 and workflows/index.ts:3 — both `export default [];`, so the module registers zero services and zero workflows.",
-    "src/modules/reactory-azure/types.d.ts:13-30 — IMicrosoftGraph declares exactly eight methods and omits getEmails.",
-    "src/modules/reactory-azure/services/graph.ts:12 — Client.init with Client never imported; :38 — ResponseType.RAW with ResponseType never imported; :105 — getEmails implemented but undeclared; :216-225 — try, catch that only logs, then `return response`; :4 — `import { response } from \"express\"`, so a failed send returns a truthy Express object.",
-    "src/modules/reactory-azure/storage/index.ts:5-8 — defaultAzureProps reads only process.env.AZURE_STORAGE_KEY and hardcodes account devstoreaccount1; :10-86 — class body is entirely commented out and the class is imported by nothing.",
-    "Source provenance: reactory-express-server HEAD 59639fe and nested reactory-azure HEAD c962956 — both still match the page frontmatter (verified: 2026-10-19, verifiedAgainst reactory-express-server@59639fe / reactory-azure@c962956).",
-    "PLATFORM.md:229 is the '## 5. The module system' heading and :287 is the Worked example paragraph linking the page — the anchor `#5-the-module-system` used in the page therefore resolves.",
-    "All five relative links in the page resolve: ../../08-contributing/module-doc-template.md, ../../PLATFORM.md#5-the-module-system, ../reactory-core/README.md, ../reactory-reactor/README.md, ../index.md.",
-    "06-modules/index.md:16 lists reactory-azure as [documented](./reactory-azure/README.md) with count 3."
+    "src/modules/available.json — reactory-azure: fqn core.ReactoryAzure@1.0.0, moduleEntry reactory-azure/index.ts, license commercial, shop https://reactory.net/shop/modules/reactory-azure.",
+    "src/modules/enabled-reactory.json and src/modules/installed.json — same entry; both also license commercial.",
+    "src/modules/reactory-azure/index.ts:8-30 — matches the §2 table exactly: id reactory-azure, nameSpace core, version 1.0.0, name ReactoryAzure, dependency core.ReactoryServer@1.0.0, priority 0, graphDefinitions {Resolvers:{},Types:[]}, models [], workflows spread, forms [], services spread, translations [], clientPlugins [], cli [], description 'Reactory Azure Module', grpc null, passportProviders [], pdfs [].",
+    "src/modules/reactory-azure/services/index.ts and workflows/index.ts — both contain only `export default [];`, confirming zero registered services and zero workflow definitions.",
+    "src/modules/reactory-azure/types.d.ts:13-30 — interface declares eight methods and omits getEmails; services/graph.ts implements nine (getEmails at :105), so the annotated literal at :27 is an excess property.",
+    "src/modules/reactory-azure/services/graph.ts:12 — Client.init with Client never imported; :38 ResponseType never imported; :216-225 factory inside try, catch logs, then return resolves to the Express `response` import at :4.",
+    "src/modules/reactory-azure/storage/index.ts:5-8 — reads only process.env.AZURE_STORAGE_KEY with account hardcoded to devstoreaccount1; :10-86 class body is commented out.",
+    "06-modules/index.md:16 — reactory-azure row still shows licence 'commercial'; this is generator output from available.json and is explicitly flagged as non-authoritative by the page.",
+    "PLATFORM.md:229 heading and :287 worked-example paragraph both present; 08-contributing/module-doc-template.md:9-13 and :73-77 name the page the canonical sample implementation."
   ],
-  "acceptance_criteria": [
+  "deliverables": [
     {
-      "criterion": "Licence/status contradiction resolved",
-      "result": "Met at documentation level; source correction routed. The page states MIT + example-only as authoritative from the package manifest and AGENT.md, records the three `commercial` registry values and the shop URL as the defect, specifies the exact one-word-per-file fix plus shop-URL removal, and warns that the generated index column reproduces the stale value. The registry files themselves live in reactory-express-server, outside this docs worktree and outside PR #6, so changing them here would be an unreviewed cross-repo edit; follow-up ticket REACTORY-302016408/20261019/923623068 now owns that change with acceptance criteria."
+      "path": "06-modules/reactory-azure/README.md",
+      "lines": 1005,
+      "status": "verified unchanged",
+      "what": "Eleven ordered sections covering all ticket scope, with §9 the canonical step-by-step build walkthrough and §11 a 105-citation evidence index."
     },
     {
-      "criterion": "Example walkthrough maps every step to a real file",
-      "result": "Met. §9 runs ten build steps (registry → module object → vendor wrapper → data model → GraphQL → workflows → forms/UI → storage → runtime registration → verification), each naming real files and lines, plus a reactory-google comparison and a copy checklist. The verifier resolves all 105 citations to existing files and in-range lines, and this run spot-checked the key line numbers (index.ts, graph.ts, types.d.ts, storage/index.ts, package.json, available.json) directly with `cat -n`."
+      "path": "08-contributing/module-doc-template.md",
+      "lines": 115,
+      "status": "verified unchanged",
+      "what": "Module documentation template; names reactory-azure the canonical sample implementation and links the worked-example anchor."
     },
     {
-      "criterion": "Page cross-linked from the module-system architecture page as the worked example",
-      "result": "Met. PLATFORM.md §5 'The module system' contains the 'Worked example' paragraph linking 06-modules/reactory-azure/README.md; the page itself links back to §5; and 08-contributing/module-doc-template.md names the page as the canonical sample implementation."
+      "path": "PLATFORM.md",
+      "status": "verified unchanged",
+      "what": "§5 'The module system' carries the worked-example paragraph at line 287 linking the azure page — the architecture-page cross-link acceptance criterion."
+    },
+    {
+      "path": "06-modules/index.md",
+      "status": "verified unchanged",
+      "what": "Regenerated index; azure is listed as documented and the documented count is 3. Licence column still commercial, sourced from available.json and documented as stale for this module."
+    },
+    {
+      "path": "scripts/verify-azure-docs.js",
+      "lines": 677,
+      "status": "passed 34/34",
+      "what": "Dependency-free structural and source verifier for this page, including citation resolution and checks that the documented defects still exist in source."
+    },
+    {
+      "path": ".ai-agent/report.json",
+      "status": "refreshed this run",
+      "what": "This verification report."
     }
   ],
-  "review_history": {
-    "internalReview": "approved (QualityQuinn) at d58c4d6; requiredChanges empty. Earlier findings RC-1 (eight declared vs nine implemented methods; TS2353/TS2339 on getEmails) and RC-2 (sendEmail catches the missing Client and returns the Express response export) were fixed in 20a8ebf and d58c4d6 and re-verified this run.",
-    "githubReviews": "none submitted; PR is BLOCKED only on REVIEW_REQUIRED, mergeable is MERGEABLE, GitGuardian check passed."
+  "changes_this_run": {
+    "documentationEdits": "none — the existing change satisfies the ticket; re-verification found no inaccuracy",
+    "actions": [
+      "Re-ran all three verifiers against a live server checkout rather than relying on the prior report.",
+      "Independently re-read the azure module source, the three registry files and the generated index to confirm the page's load-bearing claims.",
+      "Confirmed both cross-links at their actual line numbers in PLATFORM.md and module-doc-template.md.",
+      "Confirmed local HEAD equals the pushed branch head and queried live PR #6 state.",
+      "Confirmed the follow-up server-licence ticket exists and is open.",
+      "Wrote this fresh completion report to the mandated path."
+    ]
   },
-  "closeout_actions_this_run": [
-    "Completed the PR #6 body: replaced the empty '### Changes' section with a six-file change table, added the verification block with exact pass counts, the source-provenance pin, licence notes, and the follow-up ticket reference.",
-    "Filed follow-up ticket REACTORY-302016408/20261019/923623068 — '[Server] reactory-azure licence metadata contradicts its example-only status'. It names available.json:28/:30, enabled-reactory.json:28 and installed.json:28, cites the MIT/example-only authority, and defines acceptance as MIT in all three files plus shop-URL removal.",
-    "Re-ran all three verifiers and independently re-read the module source rather than trusting the prior report; no inaccuracies were found in the page, so no content edits were required."
-  ],
   "open_items": [
     {
       "item": "Server registry licence correction",
-      "owner": "REACTORY-302016408/20261019/923623068",
-      "note": "Cannot be done in the docs repo. Until it lands, 06-modules/index.md will keep showing 'commercial' for reactory-azure by design of the generator."
+      "owner": "REACTORY-302016408/20261019/923623068 (open)",
+      "note": "available.json:28, enabled-reactory.json:28 and installed.json:28 say commercial; available.json:30 carries a shop URL. Cannot be changed from the docs worktree. Until fixed, 06-modules/index.md will keep showing commercial for reactory-azure by generator design."
     },
     {
       "item": "Stale generated reference 07-reference/modules/reactory-core.md",
-      "owner": "pre-existing on master",
-      "note": "verify-docs.js is 25/26 for this reason. Regenerating it is unrelated to this ticket and would add generated-file churn to the PR; it should be regenerated with the core page change that caused the drift."
+      "owner": "pre-existing on origin/master",
+      "note": "Causes verify-docs.js to report 25/26. File is byte-identical to origin/master and this branch does not touch 07-reference; regenerating it is unrelated to this ticket."
     },
     {
-      "item": "PR #6 human review",
+      "item": "PR #6 human review and merge",
       "owner": "reactorynet/reactory-docs reviewers",
-      "note": "Open and mergeable; internal review approved; no GitHub review submitted yet."
+      "note": "Open, mergeable, all checks green; blocked only by the required-review rule."
     }
   ],
   "notes": [
-    "This run deliberately verified instead of restarting. The page content was left unchanged because every load-bearing claim re-checked against source was accurate, including the two previously corrected findings (eight declared / nine implemented methods; sendEmail's caught error and truthy Express return).",
-    "The page is pinned to the current source HEADs (59639fe / c962956); if the module is later fixed (service registration, Graph dependency, getEmails declared, sendEmail return, storage implemented or deleted), §1, §5, §8, §9.4, §9.9, §10 and the verifiedAgainst stamp must change in the same commit.",
-    "No changes were made to the reactory-express-server checkout; it has unrelated local modifications from the running platform and was used read-only as the source of truth."
+    "This was a verification run, not a re-implementation: the ticket explicitly stated the work was already complete and pushed. No documentation content was modified.",
+    "The page is pinned to reactory-express-server@59639fe / reactory-azure@c962956 in its frontmatter. If the module is later fixed (service registration, Graph dependency, getEmails declared, sendEmail return, storage implemented or deleted), §1, §5, §8, §9.4, §9.9, §10 and the verifiedAgainst stamp must change together.",
+    "The reactory-express-server checkout was used read-only as the source of truth; no server files were modified."
   ]
 }
